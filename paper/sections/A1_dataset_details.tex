@@ -1,12 +1,12 @@
 \section{Dataset Construction Details}
 \label{app:data}
 
-This appendix documents the data actually used in the pilot experiments
-(\S\ref{sec:results}); steps that belong to the final protocol but are not yet
-exercised by the pilot are explicitly marked \emph{planned}.
+This appendix documents the data used in the experiments
+(\S\ref{sec:results}); extensions we considered but did not need at this scale
+are marked \emph{future work}.
 
-\subsection{Source and input construction (pilot)}
-All pilot examples come from BigVul \citep{fan2020bigvul}, which provides, for
+\subsection{Source and input construction}
+All examples come from BigVul \citep{fan2020bigvul}, which provides, for
 each vulnerability-fixing commit in C/C++ projects, the vulnerable function
 (\texttt{func\_before}), the fixed function (\texttt{func\_after}), the commit
 message, and a CVE-derived CWE label. We keep rows marked vulnerable whose CWE
@@ -20,11 +20,11 @@ ceiling we observed on raw functions. Diffs with fewer than three lines are
 dropped; code is truncated at 5{,}000 characters at prompt time
 (\S\ref{app:prompts}).
 
-\subsection{Splits (pilot)}
-The dev set ($n{=}50$) is drawn from the BigVul validation split and the pilot
-set ($n{=}500$) from the BigVul test split --- so prompt iteration on dev cannot
-overfit the pilot --- using per-CWE stratified round-robin sampling (seed 42).
-Pilot statistics: 500 examples, 18 distinct CWE leaves, 73 distinct projects;
+\subsection{Splits}
+The dev set ($n{=}50$) is drawn from the BigVul validation split and the evaluation pool
+($n{=}500$) from the BigVul test split --- so prompt iteration on dev cannot
+overfit the evaluation pool --- using per-CWE stratified round-robin sampling (seed 42).
+Pool statistics: 500 examples, 18 distinct CWE leaves, 73 distinct projects;
 median diff length 15 lines (mean 27). Category composition:
 \textsc{buffer} 214, \textsc{injection} 117, \textsc{access} 77,
 \textsc{lifetime} 54, \textsc{numeric} 28, \textsc{resource} 5,
@@ -42,10 +42,10 @@ minimal-depth, discovery wins). The result has 944 nodes and 716 leaves (depths
 0--5) and is released as adjacency JSON with SHA-256
 \texttt{7aeff209\ldots{}26948a6}.
 
-\paragraph{Coarse code-aligned tree (pilot).} MITRE pillars are research
+\paragraph{Coarse code-aligned tree (operational).} MITRE pillars are research
 abstractions (``Improper Control of a Resource Through its Lifetime'') that even
 strong policies place poorly, which floors level-0 accuracy and makes the
-policy-strength axis (RQ2) unreadable. For the pilot we therefore regroup the
+policy-strength axis (RQ2) unreadable. We therefore regroup the
 22 dataset CWEs into a 2-level tree with 7 code-recognizable super-categories
 (spatial memory, temporal memory / lifetime, resource exhaustion, numeric,
 injection / input handling, control-flow, access control / info exposure /
@@ -56,22 +56,26 @@ vocabulary rather than an ad-hoc simplification. The tree is released with
 SHA-256 \texttt{f3013c19\ldots{}9c79aa}. The full-depth tree is used only for
 the granularity boundary-condition probe (\S\ref{sec:granularity}).
 
-\subsection{Multi-source pooling and deduplication (planned)}
-The final protocol pools PrimeVul \citep{ding2024primevul}, DiverseVul
+\subsection{Multi-source pooling and deduplication (future work)}
+A natural extension pools PrimeVul \citep{ding2024primevul}, DiverseVul
 \citep{chen2023diversevul}, BigVul, and CVEfixes \citep{bhandari2021cvefixes},
 with function-level MinHash deduplication (Jaccard $\ge 0.85$) and
-repository-level disjointness across splits; the pilot uses a single source
-(BigVul) with splits inherited from the dataset's own validation/test
-partition, so cross-source leakage is not yet a concern at pilot scale.
+repository-level disjointness across splits. We use a single source (BigVul)
+with splits inherited from the dataset's own validation/test partition, so
+cross-source leakage does not arise.
 
-\subsection{Pretraining-leakage slice (planned)}
-Because public CVEs may appear in pretraining corpora, the final protocol
-reports a slice restricted to CVEs published after each model's training
-cutoff. At pilot scale we note that all four policies see the same examples, so
-leakage would shift absolute numbers rather than the strategy comparisons that
-are the object of study.
+\subsection{Pretraining-leakage slice (future work)}
+Because public CVEs may appear in pretraining corpora, a fair slice would
+restrict evaluation to CVEs published after each model's training cutoff.
+BigVul's CVEs span 2006--2019 and predate every policy's cutoff, so this slice
+is not constructible from the present corpus; building a small post-2024 set
+(e.g.\ from CVEfixes or NVD) is future work. We note that all policies see the
+same examples, so leakage shifts absolute numbers rather than the
+within-budget strategy comparisons that are the object of study, and the
+temporal analysis (\S\ref{sec:analysis}) shows the orderings are stable across
+CVE years.
 
-\subsection{Datasheet (planned)}
+\subsection{Datasheet (future work)}
 A Datasheets-for-Datasets \citep{gebru2021datasheets} entry (motivation,
 composition, collection, preprocessing, uses, distribution, maintenance) will
 accompany the released benchmark bundle.

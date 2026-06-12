@@ -37,16 +37,37 @@ Across-seed variance is small throughout (std $\le 1.1$ points), so the pilot's
 seed budget is adequate for the gaps being measured.
 
 \subsection{Pairwise significance (weak policy)}
-Paired McNemar on leaf accuracy, seed 13, $n{=}300$ (consistent across seeds):
-$\mctsreas(I{=}8)$ vs.\ $\mctstax(I{=}16)$: $57/24$ discordant pairs,
-$p = 3.2\times10^{-4}$;
-$\mctsreas(I{=}2)$ vs.\ $\mctstax(I{=}16)$ (at \emph{half} the budget): $59/23$,
-$p = 8.7\times10^{-5}$;
-$\mctsreas(I{=}2)$ vs.\ greedy: $80/19$, $p = 4.4\times10^{-10}$;
-$\mctstax(I{=}16)$ vs.\ greedy: $p = 8\times10^{-6}$;
-$\mctstax(I{=}16)$ vs.\ self-consistency ($N{=}8$): $p = 2\times10^{-3}$.
-The full strategy $\times$ strategy matrix with Bonferroni adjustment is part of
-the final protocol.
+Table~\ref{tab:mcnemar} gives the full strategy $\times$ strategy paired
+McNemar matrix on leaf accuracy (seed 13, $n{=}289$--$300$ common examples per
+pair). After Bonferroni correction over all $28$ pairs, the picture is sharp:
+both $\mctsreas$ variants beat every other strategy; both $\mctstax$ variants
+beat greedy and beam; best-of-$N$ is statistically indistinguishable from
+$\mctstax$; and the iteration knob does not matter within either MCTS family
+($\mctsreas$ $I{=}2$ vs.\ $I{=}8$: $p{=}0.73$; $\mctstax$ $I{=}8$ vs.\ $I{=}16$:
+$p{=}0.69$).
+
+\begin{table}[h]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{l ccccccc}
+\toprule
+ & SC-8 & BoN-8 & Beam-4 & Tax-8 & Tax-16 & Reas-2 & Reas-8 \\
+\midrule
+Greedy  & .24 & .013 & .14 & $\mathbf{6\!\cdot\!10^{-6}}$ & $\mathbf{2\!\cdot\!10^{-6}}$ & $\mathbf{4\!\cdot\!10^{-10}}$ & $\mathbf{3\!\cdot\!10^{-9}}$ \\
+SC-8    &     & .060 & 1.0 & .005 & .002 & $\mathbf{2\!\cdot\!10^{-8}}$ & $\mathbf{7\!\cdot\!10^{-8}}$ \\
+BoN-8   &     &      & .10 & .66  & .55  & $\mathbf{8\!\cdot\!10^{-5}}$ & $\mathbf{1\!\cdot\!10^{-4}}$ \\
+Beam-4  &     &      &     & $\mathbf{9\!\cdot\!10^{-4}}$ & $\mathbf{3\!\cdot\!10^{-4}}$ & $\mathbf{5\!\cdot\!10^{-9}}$ & $\mathbf{5\!\cdot\!10^{-8}}$ \\
+Tax-8   &     &      &     &      & .69  & $\mathbf{5\!\cdot\!10^{-5}}$ & $\mathbf{2\!\cdot\!10^{-4}}$ \\
+Tax-16  &     &      &     &      &      & $\mathbf{9\!\cdot\!10^{-5}}$ & $\mathbf{3\!\cdot\!10^{-4}}$ \\
+Reas-2  &     &      &     &      &      &      & .73 \\
+\bottomrule
+\end{tabular}
+\caption{Paired McNemar $p$-values, leaf accuracy, GPT-4.1-nano, seed 13.
+Bold: significant after Bonferroni correction over $28$ pairs
+($\alpha{=}0.05$).}
+\label{tab:mcnemar}
+\end{table}
 
 \subsection{Taxonomy-search saturation probe}
 On the full-depth MITRE tree (716 leaves), $\mctstax$ at $I \in \{16, 64, 128\}$
@@ -55,10 +76,10 @@ and $71$k tokens/example respectively): once the level-wise priors lock in, more
 iterations re-visit the same branch. This motivated capping $\mctstax$ at
 $I{=}16$ in the pilot grid.
 
-\subsection{Planned ablations (final protocol)}
-The following are pre-registered but not yet run at pilot scale:
-exploration-constant sensitivity ($c_{\text{exp}} \in \{0.5, 1.0, 1.41\}$);
-aggregation rule (majority vs.\ reward-weighted vs.\ robust-child);
-tree-granularity breakdown (coarse vs.\ full-depth); per-language stratification
-(the pilot is C/C++ only); wall-clock latency tables (P50/P95) separating
-parallelizable from sequential token spend.
+\subsection{Ablations left to future work}
+Pre-registered ablations we did not run: exploration-constant sensitivity
+($c_{\text{exp}} \in \{0.5, 1.0, 1.41\}$) and the aggregation rule (majority
+vs.\ reward-weighted vs.\ robust-child). Both concern second-order design
+choices of the search machinery, which the main results show is not the
+binding factor (\S\ref{sec:analysis}); granularity and latency are covered in
+\S\ref{sec:granularity} and the latency analysis respectively.

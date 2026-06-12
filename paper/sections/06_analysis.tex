@@ -84,21 +84,39 @@ search is reward-guided in a meaningful sense; it is the set of candidates the
 search space exposes, not their ranking, that binds.
 
 \subsection{Latency and practical cost}
-Token budget understates MCTS's practical cost: self-consistency parallelizes
-trivially across its independent samples, whereas MCTS is sequential (each
-iteration depends on the previous tree statistics). The flat $\mctsreas$
-iteration curve softens this in practice --- at $I{=}2$ its sequential depth is
-small --- but the asymmetry matters wherever more search \emph{is} needed.
-\TODO{Pareto frontier with wall-clock latency (P50/P95) on the x-axis.}
+Token budget understates MCTS's practical cost, and the right structural
+measure is \emph{sequential depth}: the number of LLM rounds that cannot be
+parallelized. On our two-level tree, greedy and self-consistency have depth $2$
+(samples are independent), best-of-$N$ depth $3$, and beam depth equal to the
+number of levels; MCTS iterations, by contrast, are inherently sequential
+because each depends on the previous tree statistics --- roughly $2I$ rounds
+for $\mctstax$ ($\approx\!34$ at $I{=}16$) and $3I$ for $\mctsreas$
+($\approx\!24$ at $I{=}8$, $\approx\!7$ at $I{=}2$). Uncached pilot runs are
+consistent: with 10-way example parallelism, Haiku spends $\approx\!47$\,s and
+$\approx\!32$\,s of wall clock per example on $\mctstax(16)$ and
+$\mctsreas(8)$ respectively, versus seconds for the depth-2 strategies. The
+flat $\mctsreas$ iteration curve (Figure~\ref{fig:budget}) is therefore also a
+latency result: at $I{=}2$ the best strategy runs at near-interactive depth,
+whereas matching $\mctstax$'s budget costs an order of magnitude more
+sequential rounds for less accuracy.
 
 \subsection{Failure modes}
-The cascade breakdown above is the quantitative core of the failure analysis:
-taxonomy search fails predominantly by early-level commitment; reasoning search's
-residual errors are split between wrong-category commits and within-category
-(sibling-CWE) confusions, the latter reflecting genuine taxonomy ambiguity and
-label noise (\S\ref{sec:limitations}).
-\TODO{Manual labeling of 100 errors into pillar-miss / sibling-miss /
-reward-misranking / ambiguous-ground-truth, weak vs.\ strong policy.}
+We decompose the errors of $\mctstax(16)$ and $\mctsreas(8)$ (weak policy, seed
+13, $n{=}300$) along three mechanically computable axes plus one adjudicated
+one. \emph{Level:} both strategies make $78\%$ of their errors at the category
+level and $22\%$ at the sibling level --- the strategies differ in \emph{how
+many} errors they make (231 vs.\ 198), not where. \emph{Reward misranking:} the
+gold leaf appeared among the search's own rollout commitments --- found but not
+selected --- in $17\%$ of $\mctstax$ errors and $27\%$ of $\mctsreas$ errors;
+this slice is the upper bound on what a better reward could recover, and its
+size for $\mctsreas$ explains why the external judge helps only there (RQ3).
+\emph{Ambiguous gold:} an LLM adjudicator (Claude-Haiku-4.5, shown the patch
+and both labels' definitions) judges the model's label a \emph{defensible
+alternative} for $42\%$ of sampled $\mctsreas$ errors but only $12\%$ of
+$\mctstax$ errors ($50$ samples each). Reasoning search's residual errors are
+thus to a large degree single-label artifacts on genuinely multi-label
+examples, whereas taxonomy search's errors are mostly outright misses ---
+its effective accuracy gap is wider than the headline numbers suggest.
 
 \subsection{Limitations}
 \label{sec:limitations}
@@ -107,11 +125,13 @@ reward-misranking / ambiguous-ground-truth, weak vs.\ strong policy.}
 and many functions admit several valid CWEs while the gold label is single; this
 caps achievable accuracy independently of method (greedy category accuracy plateaus
 near $0.40$ even for a premium model on raw functions).
-\item \textbf{Pilot scale.} Headline comparisons use $n{=}300$ ($5$ seeds) for the
-weak policy and $n{=}130$--$150$ ($3$ seeds) for DeepSeek/Haiku, all drawn from
-one fixed example file (the smaller sets are prefixes of the larger), with a few
-per-cell API failures dropped; the final protocol fixes a common $n{\approx}2000$
-test set with $5$ seeds and paired McNemar throughout.
+\item \textbf{Scale.} Comparisons use $n{=}300$ ($5$ seeds) for the weak policy
+and $n{=}120$--$150$ ($1$--$3$ seeds) for the others, all drawn from one fixed
+example file (the smaller sets are prefixes of the larger), with a few per-cell
+API failures dropped. The headline effects are large relative to this scale
+(across-seed std $\le 1.1$ points; Bonferroni-corrected significance in
+Appendix~\ref{app:extra}), but the premium-policy cells in particular would
+benefit from more data.
 \item \textbf{Saturation of $\mctstax$.} We compare $\mctstax$ up to $I{=}16$
 ($10.7$k tokens); deeper probes ($I$ up to $128$, full-depth tree, $n{=}8$)
 showed predictions frozen well before $I{=}16$, and $\mctsreas$ at \emph{half}
@@ -125,7 +145,7 @@ CVEs during pretraining; a post-cutoff slice is a planned robustness check.
 \item \textbf{Granularity coverage.} Findings are established on a 26-CWE
 subset of View-1003 (the labels occurring in the data) plus a floor probe at
 View-1000; the intermediate regime --- the full 130-CWE View-1003 as used by
-NVD --- is the natural target for the final protocol.
+NVD --- is the natural target for future work.
 \item \textbf{Language coverage.} Data is C/C++-dominated.
 \end{itemize}
 
@@ -145,5 +165,13 @@ which is also why MITRE directs practical CVE mapping to the smaller View-1003
 (\S\ref{sec:problem}). Test-time search is a lever \emph{within} the
 operational regime, not a way to buy back a label space the policy cannot see.
 
-\TODO{Robustness: confirm the reasoning$>$taxonomy result on a temporal split
-(BigVul 2006--16 vs.\ 2017--19).}
+\subsection{Temporal robustness}
+Splitting the $300$ pilot examples by CVE year (2006--16: $n{=}168$; 2017--19:
+$n{=}132$) preserves the full strategy ordering in both periods
+(weak policy, leaf accuracy, $5$ seeds): greedy $11.3$/$18.9$,
+self-consistency $12.4$/$21.8$, $\mctstax$ $16.0$/$31.8$, $\mctsreas$
+$33.2$/$35.6$ (old/recent). All strategies score higher on recent CVEs --- a
+drift we cannot attribute (different project mix, or greater pretraining
+exposure to recent CVEs) --- but the conclusions rest on \emph{within-period}
+orderings, which are stable; notably $\mctsreas$ is the least sensitive to the
+period ($+2.4$ points old$\to$recent vs.\ $+15.8$ for $\mctstax$).

@@ -16,50 +16,52 @@ from a stronger policy;
 \textbf{H4} reasoning search beats taxonomy search for weak policies.
 
 \subsection{Datasets and Splits}
-We assemble CWE-labeled data from four public sources --- PrimeVul, DiverseVul,
-BigVul, and CVEFixes --- and deduplicate at the function level (MinHash, Jaccard
-$\ge 0.85$) and at the repository level across all sources and splits to prevent
-leakage. The CWE tree is built from MITRE relationships (pillars $+$ depth 3,
-paths deduplicated) and released with a SHA-256 hash. Splits are
-\emph{stratified} train / calibration / test (target test size $\approx 2000$;
-dev set 50--100); a temporal split by CVE publication date is reported as a
-robustness check (\S\ref{sec:analysis}).
+All examples come from BigVul \citep{fan2020bigvul}: vulnerability-fixing
+commits in C/C++ projects rendered as unified diffs with the commit message
+(Appendix~\ref{app:data}). The dev set ($n{=}50$, prompt iteration only) is
+drawn from BigVul's validation split and the evaluation pool ($n{=}500$,
+stratified by CWE) from its test split, so prompt development cannot overfit
+the evaluation data. The CWE trees (operational and full-depth,
+\S\ref{sec:problem}) are built from MITRE relationships and released with
+SHA-256 hashes. A temporal split by CVE year is reported as a robustness check
+(\S\ref{sec:analysis}).
 
 \paragraph{Pretraining-leakage control.}
-Because LLMs may have seen public CVEs during pretraining, we report accuracy on
-the subset whose CVE was published \emph{after} each model's cutoff as a fair
-slice, alongside the full set.
+LLMs may have seen public CVEs during pretraining; BigVul's CVEs (2006--2019)
+all predate every policy's training cutoff, so a post-cutoff ``fair slice'' is
+not constructible from this corpus. We instead verify that conclusions are
+stable across CVE years (\S\ref{sec:analysis}) and note that leakage shifts
+absolute accuracies, not the within-budget strategy comparisons that are the
+object of study --- all strategies share the same policy and examples.
 
-Pilot-scale data statistics (sources, splits, per-category composition, tree
-hashes) are given in Appendix~\ref{app:data}; the final-protocol dataset table
-will be added with the headline runs.
+Data statistics (sources, splits, per-category composition, tree hashes) are
+given in Appendix~\ref{app:data}.
 
 \subsection{Strategies and Models}
 The seven strategies of \S\ref{sec:method} all use the same policy and prompt.
-We use four cheap-tier policies spanning a range of strength
-(GPT-4.1-nano, Gemini-2.5-Flash-Lite, DeepSeek-V3.1, Claude-Haiku-4.5) for the
-pilot, plus a premium policy (Claude-Sonnet-4.6) on a reduced sample to probe
-the strong end of the $\polacc$ axis required for H2; the headline phase extends
-the premium coverage.
-At least two open-weight models (DeepSeek $+$ Qwen2.5-Coder-32B or Llama-3.3-70B)
-are included for reproducibility. The external judge is a model stronger than the
-current policy; each $(\policy,\text{judge})$ pair is logged.
+We use five policies spanning the strength axis required for H2: four
+cheap-tier (GPT-4.1-nano, Gemini-2.5-Flash-Lite, DeepSeek-V3.1 --- open-weight
+--- and Claude-Haiku-4.5) plus a premium policy (Claude-Sonnet-4.6) on a
+reduced sample for the strong end. The external judge is a model stronger than
+the policy it judges (Claude-Haiku-4.5 judging GPT-4.1-nano); each
+$(\policy,\text{judge})$ pair is logged.
 
 \subsection{Compute-Matched Protocol}
-We first measure $\mathrm{tok}_X(c)$ per knob value on the dev set, then define a
-budget grid $\budget \in \{1\times, 2\times, 4\times, 8\times, 16\times, 32\times\}$
-relative to a single greedy pass. For each $\budget$ we set every strategy's knob
-to match expected tokens, and compare strategies \emph{only} at equal $\budget$.
-We additionally report wall-clock latency (P50/P95): self-consistency parallelizes
+We measure $\mathrm{tok}_X(c)$ per knob value (Table~\ref{tab:a2}), giving a
+budget grid that spans $1\times$--$10\times$ a single greedy pass, and compare
+strategies \emph{only} at comparable measured budgets --- including across
+search spaces, where we sweep the $\mctsreas$ iteration knob down until its
+budget falls below $\mctstax$'s. We additionally analyze sequential depth and
+wall-clock latency (\S\ref{sec:analysis}): self-consistency parallelizes
 trivially, MCTS does not --- a practically important asymmetry.
 
 \subsection{Metrics and Statistics}
-Primary: leaf accuracy, pillar accuracy, hierarchical-$F_1$, and the
-accuracy-vs-budget curve $\Acc_X(\budget)$. Secondary: path accuracy@$k$,
-Wu--Palmer, ECE, tokens/sample, \$/sample, latency. All configurations use 5
-seeds; we report mean $\pm$ std and 95\% bootstrap CIs ($10^4$ resamples).
-Strategy comparisons at fixed $\budget$ use paired McNemar with Bonferroni
-correction.
+Primary: leaf accuracy, category (level-0) accuracy, hierarchical-$F_1$ on path
+edges \citep{kosmopoulos2015evaluation}, and the accuracy-vs-budget curve
+$\Acc_X(\budget)$; secondary: tokens/sample and sequential depth. Stochastic
+configurations use $5$ seeds on the weak-policy grid and $3$ on the other
+policies (deterministic strategies run once); we report mean $\pm$ std across
+seeds, and strategy comparisons at comparable budgets use paired McNemar.
 
 \section{Results}
 \label{sec:results}
@@ -70,9 +72,9 @@ Table~\ref{tab:matched} reports the compute-matched comparison on a \emph{weak}
 policy (GPT-4.1-nano) and a \emph{strong} policy (Claude-Haiku-4.5), on BigVul
 examples (diff$+$commit-message input, $7$-category code-aligned tree), comparing
 greedy, self-consistency, and $\mctstax$ at a token budget where the latter two
-spend roughly equally within each policy. \emph{(Pilot: nano $n{=}300$/$5$ seeds,
-Haiku $n{=}150$/$3$ seeds; the final protocol scales to $n{\approx}2000$ with
-paired McNemar throughout, see \S\ref{sec:experiments}.)}
+spend roughly equally within each policy (nano $n{=}300$/$5$ seeds, Haiku
+$n{=}150$/$3$ seeds; the full pairwise significance matrix is in
+Appendix~\ref{app:extra}).
 
 \begin{table}[t]
 \centering
@@ -118,7 +120,7 @@ search here acts as a \emph{compensator for weak policies}, not a universal
 improvement.
 
 \subsection{RQ2: Search Gain vs.\ Policy Strength}
-Across three policy points the marginal search gain $\gain$ of $\mctstax$ over
+Across five policy points the marginal search gain $\gain$ of $\mctstax$ over
 greedy (category accuracy) \emph{decreases monotonically} with policy strength
 $\polacc$:
 %
@@ -138,7 +140,7 @@ The taxonomy-search gain falls from $+7$--$11$ points at the weak end
 ($\polacc \approx 0.28$, two independent policies) to $\approx 0 \pm 3$ at the
 strong end (Haiku $-2.3$, Sonnet $+1.7$); the reasoning-search gain starts far
 higher ($+14$--$19$) and collapses onto the same near-zero band ($-3.8$ /
-$+2.5$). At the strong end the residual gains are within pilot noise of zero.
+$+2.5$). At the strong end the residual gains are within noise of zero at this scale.
 
 This \textbf{contradicts our pre-registered H2}, which anticipated that gain would
 \emph{increase} with $\polacc$ (a threshold $\alpha^\star$ below which search
@@ -155,10 +157,9 @@ $\mctsreas$ ($27.8$ leaf, $44.9$ category) --- so the pre-registered H1
 the weak policy but roughly holds mid-scale. The ordering that is stable across
 all three policies is the search-space one (RQ4).
 
-\emph{(Pilot: nano $n{=}300$/$5$ seeds; DeepSeek and Haiku $n{=}130$--$150$/$3$
-seeds on the same example prefix; greedy is deterministic. The final protocol
-runs all policies on identical examples with bootstrap CIs and adds a premium
-point.)}
+\emph{(nano $n{=}300$/$5$ seeds; DeepSeek and Haiku $n{=}130$--$150$/$3$ seeds;
+Sonnet $n{=}120$/$1$ seed; all evaluation sets are prefixes of one fixed,
+shuffled example file, and greedy is deterministic.)}
 
 \subsection{RQ3: Is the Reward the Bottleneck?}
 If reward fidelity limited MCTS, replacing the policy's self-evaluation with a
@@ -177,8 +178,8 @@ matching.
 search-space problem --- and buys, on reasoning search, less than its extra
 tokens are worth elsewhere. The reward source is therefore not the binding
 constraint; the policy and the search space are (consistent with RQ2 and RQ4).
-\emph{(A reward-calibration analysis --- AUROC of reward vs.\ path correctness
-for self-eval and judge --- is part of the final protocol.)}
+A reward-calibration analysis (AUROC of rollout reward vs.\ correctness for
+both reward sources) corroborates this reading in \S\ref{sec:analysis}.
 
 \subsection{RQ4: Taxonomy vs.\ Reasoning Search}
 We compare MCTS over the taxonomy ($\mctstax$, committing level-by-level) against

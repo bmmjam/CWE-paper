@@ -25,7 +25,7 @@ compute}.
  }
  if (tree[current].low > high) {
 \end{lstlisting}
-\caption{A motivating pilot example (ghostscript; abridged). \texttt{add\_range}
+\caption{A motivating example (ghostscript; abridged). \texttt{add\_range}
 may reallocate \texttt{cmap->tree}, so the subsequent reads through the stale
 \texttt{tree} pointer are a use-after-free (CWE-416). Greedy answers CWE-125
 (out-of-bounds \emph{read}); self-consistency at $8\times$ the budget agrees with
