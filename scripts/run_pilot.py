@@ -81,6 +81,8 @@ def main() -> None:
                     help="override reward_source for mcts/bon cells (RQ3)")
     ap.add_argument("--only", default=None,
                     help="comma list of 'strategy' or 'strategy:knobval' to keep")
+    ap.add_argument("--tag", default="",
+                    help="extra tag for output filenames (e.g. 'fulltree')")
     args = ap.parse_args()
 
     model = args.model
@@ -94,6 +96,8 @@ def main() -> None:
     split = Path(args.data).stem
     msafe = model.replace("/", "_").replace(".", "-")
     tag = f"_{args.reward}" if args.reward else ""
+    if args.tag:
+        tag += f"_{args.tag}"
     if args.only:  # subset runs get their own file, never clobber the full run
         tag += "_only-" + args.only.replace(",", "-").replace(":", "")
     csv_path = Path(f"results/pilot_{split}_{msafe}{tag}.csv")

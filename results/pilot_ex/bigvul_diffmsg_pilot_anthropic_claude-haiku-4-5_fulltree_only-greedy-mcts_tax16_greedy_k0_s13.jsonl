@@ -1,0 +1,50 @@
+{"id": "Chrome:eea3300239:28202", "gold": "CWE-200", "gold_path": ["CWE-664", "CWE-668", "CWE-200"], "pred": "CWE-838", "pred_path": ["CWE-707", "CWE-116", "CWE-838"], "total_tokens": 3712}
+{"id": "krb5:83ed75feba:7886", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-401", "pred_path": ["CWE-664", "CWE-404", "CWE-772", "CWE-401"], "total_tokens": 5662}
+{"id": "httpd:29afdd2550:7815", "gold": "CWE-416", "gold_path": ["CWE-664", "CWE-118", "CWE-119", "CWE-825", "CWE-416"], "pred": "CWE-1314", "pred_path": ["CWE-284", "CWE-285", "CWE-862", "CWE-1314"], "total_tokens": 6403}
+{"id": "iperf:91f2fa59e8:29546", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-1277", "pred_path": ["CWE-664", "CWE-1329", "CWE-1277"], "total_tokens": 3929}
+{"id": "miniupnp:f321c2066b:8797", "gold": "CWE-476", "gold_path": ["CWE-710", "CWE-476"], "pred": "CWE-390", "pred_path": ["CWE-703", "CWE-755", "CWE-390"], "total_tokens": 2886}
+{"id": "Chrome:9b99a43fc1:26018", "gold": "CWE-125", "gold_path": ["CWE-664", "CWE-118", "CWE-119", "CWE-125"], "pred": "CWE-391", "pred_path": ["CWE-703", "CWE-754", "CWE-391"], "total_tokens": 3302}
+{"id": "Chrome:3514a77e7f:18284", "gold": "CWE-416", "gold_path": ["CWE-664", "CWE-118", "CWE-119", "CWE-825", "CWE-416"], "pred": "CWE-457", "pred_path": ["CWE-664", "CWE-665", "CWE-908", "CWE-457"], "total_tokens": 4257}
+{"id": "Chrome:108147dfd1:15925", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-647", "pred_path": ["CWE-284", "CWE-285", "CWE-863", "CWE-647"], "total_tokens": 6720}
+{"id": "Android:04839626ed:3921", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-401", "pred_path": ["CWE-664", "CWE-404", "CWE-772", "CWE-401"], "total_tokens": 4495}
+{"id": "jasper:d42b2388f7:219", "gold": "CWE-190", "gold_path": ["CWE-682", "CWE-190"], "pred": "CWE-1045", "pred_path": ["CWE-710", "CWE-1076", "CWE-1045"], "total_tokens": 4718}
+{"id": "jasper:bdfe95a6e8:31236", "gold": "CWE-476", "gold_path": ["CWE-710", "CWE-476"], "pred": "CWE-415", "pred_path": ["CWE-664", "CWE-666", "CWE-415"], "total_tokens": 4803}
+{"id": "samba:1ba49b8f38:6537", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-1314", "pred_path": ["CWE-284", "CWE-285", "CWE-862", "CWE-1314"], "total_tokens": 6478}
+{"id": "Chrome:c25b198675:2581", "gold": "CWE-200", "gold_path": ["CWE-664", "CWE-668", "CWE-200"], "pred": "CWE-1314", "pred_path": ["CWE-284", "CWE-285", "CWE-862", "CWE-1314"], "total_tokens": 6100}
+{"id": "Chrome:e89cfcb909:1448", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-242", "pred_path": ["CWE-710", "CWE-1177", "CWE-242"], "total_tokens": 3814}
+{"id": "exempi:baa4b8a02c:6049", "gold": "CWE-125", "gold_path": ["CWE-664", "CWE-118", "CWE-119", "CWE-125"], "pred": "CWE-391", "pred_path": ["CWE-703", "CWE-754", "CWE-391"], "total_tokens": 2723}
+{"id": "Android:d48f0f145f:27146", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-680", "pred_path": ["CWE-682", "CWE-190", "CWE-680"], "total_tokens": 2484}
+{"id": "Chrome:7d8cefdf6d:28967", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-1127", "pred_path": ["CWE-710", "CWE-1127"], "total_tokens": 3284}
+{"id": "linux:6e94e0cfb0:21825", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-690", "pred_path": ["CWE-703", "CWE-754", "CWE-252", "CWE-690"], "total_tokens": 2967}
+{"id": "linux:4dcc29e157:18777", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-1248", "pred_path": ["CWE-693", "CWE-1248"], "total_tokens": 3534}
+{"id": "knc:f237f3e09e:15272", "gold": "CWE-400", "gold_path": ["CWE-664", "CWE-400"], "pred": "CWE-401", "pred_path": ["CWE-664", "CWE-404", "CWE-772", "CWE-401"], "total_tokens": 6253}
+{"id": "Chrome:c995d4fe5e:19721", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-690", "pred_path": ["CWE-703", "CWE-754", "CWE-252", "CWE-690"], "total_tokens": 3216}
+{"id": "openvpn:11d21349a4:15723", "gold": "CWE-200", "gold_path": ["CWE-664", "CWE-668", "CWE-200"], "pred": "CWE-354", "pred_path": ["CWE-693", "CWE-345", "CWE-354"], "total_tokens": 4820}
+{"id": "ImageMagick:78d4c5db50:24311", "gold": "CWE-125", "gold_path": ["CWE-664", "CWE-118", "CWE-119", "CWE-125"], "pred": "CWE-391", "pred_path": ["CWE-703", "CWE-754", "CWE-391"], "total_tokens": 2671}
+{"id": "jasper:634ce8e8a5:24625", "gold": "CWE-190", "gold_path": ["CWE-682", "CWE-190"], "pred": "CWE-680", "pred_path": ["CWE-682", "CWE-190", "CWE-680"], "total_tokens": 2291}
+{"id": "ImageMagick:21eae25a8d:22839", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-690", "pred_path": ["CWE-703", "CWE-754", "CWE-252", "CWE-690"], "total_tokens": 3028}
+{"id": "savannah:863d31ae77:27649", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-193", "pred_path": ["CWE-682", "CWE-193"], "total_tokens": 2100}
+{"id": "Android:e629194c62:22844", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-453", "pred_path": ["CWE-664", "CWE-665", "CWE-1419", "CWE-1188", "CWE-453"], "total_tokens": 4932}
+{"id": "wireshark:6a140eca7b:14768", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-467", "pred_path": ["CWE-682", "CWE-131", "CWE-467"], "total_tokens": 2916}
+{"id": "linux:f3d3342602:3924", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-457", "pred_path": ["CWE-664", "CWE-665", "CWE-908", "CWE-457"], "total_tokens": 4125}
+{"id": "yara:3119b232c9:2315", "gold": "CWE-476", "gold_path": ["CWE-710", "CWE-476"], "pred": "CWE-1114", "pred_path": ["CWE-710", "CWE-1076", "CWE-1078", "CWE-1114"], "total_tokens": 5618}
+{"id": "ImageMagick:f6e9d0d995:13131", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-390", "pred_path": ["CWE-703", "CWE-755", "CWE-390"], "total_tokens": 2958}
+{"id": "php:082aecfc3a:9467", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-391", "pred_path": ["CWE-703", "CWE-754", "CWE-391"], "total_tokens": 3420}
+{"id": "ImageMagick:b61d35eacc:775", "gold": "CWE-476", "gold_path": ["CWE-710", "CWE-476"], "pred": "CWE-1114", "pred_path": ["CWE-710", "CWE-1076", "CWE-1078", "CWE-1114"], "total_tokens": 5374}
+{"id": "linux:2172fa709a:32803", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-166", "pred_path": ["CWE-703", "CWE-228", "CWE-166"], "total_tokens": 2912}
+{"id": "neomutt:9e927affe3:21521", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-690", "pred_path": ["CWE-703", "CWE-754", "CWE-252", "CWE-690"], "total_tokens": 2503}
+{"id": "jasper:d42b2388f7:839", "gold": "CWE-190", "gold_path": ["CWE-682", "CWE-190"], "pred": "CWE-1102", "pred_path": ["CWE-710", "CWE-758", "CWE-1102"], "total_tokens": 4315}
+{"id": "linux:55f0fc7a02:24975", "gold": "CWE-200", "gold_path": ["CWE-664", "CWE-668", "CWE-200"], "pred": "CWE-6", "pred_path": ["CWE-693", "CWE-330", "CWE-334", "CWE-6"], "total_tokens": 5028}
+{"id": "Chrome:5385c44d96:29716", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-457", "pred_path": ["CWE-664", "CWE-665", "CWE-908", "CWE-457"], "total_tokens": 4303}
+{"id": "Chrome:f7b020b3d3:13310", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-130", "pred_path": ["CWE-707", "CWE-240", "CWE-130"], "total_tokens": 2606}
+{"id": "Chrome:84ca1ee18b:1210", "gold": "CWE-416", "gold_path": ["CWE-664", "CWE-118", "CWE-119", "CWE-825", "CWE-416"], "pred": "CWE-385", "pred_path": ["CWE-664", "CWE-1229", "CWE-514", "CWE-385"], "total_tokens": 3934}
+{"id": "radare2:041e53cab7:14431", "gold": "CWE-125", "gold_path": ["CWE-664", "CWE-118", "CWE-119", "CWE-125"], "pred": "CWE-690", "pred_path": ["CWE-703", "CWE-754", "CWE-252", "CWE-690"], "total_tokens": 2584}
+{"id": "Chrome:8262245d38:24995", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-1314", "pred_path": ["CWE-284", "CWE-285", "CWE-862", "CWE-1314"], "total_tokens": 5986}
+{"id": "curl:2eb8dcf26c:9196", "gold": "CWE-200", "gold_path": ["CWE-664", "CWE-668", "CWE-200"], "pred": "CWE-187", "pred_path": ["CWE-697", "CWE-1023", "CWE-187"], "total_tokens": 3694}
+{"id": "openssl:2b0532f398:6504", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-690", "pred_path": ["CWE-703", "CWE-754", "CWE-252", "CWE-690"], "total_tokens": 2593}
+{"id": "ImageMagick:4f2c04ea66:6756", "gold": "CWE-125", "gold_path": ["CWE-664", "CWE-118", "CWE-119", "CWE-125"], "pred": "CWE-690", "pred_path": ["CWE-703", "CWE-754", "CWE-252", "CWE-690"], "total_tokens": 2542}
+{"id": "linux:54d83fc74a:131", "gold": "CWE-119", "gold_path": ["CWE-664", "CWE-118", "CWE-119"], "pred": "CWE-839", "pred_path": ["CWE-697", "CWE-1023", "CWE-839"], "total_tokens": 3059}
+{"id": "Chrome:3c8e485247:31142", "gold": "CWE-20", "gold_path": ["CWE-707", "CWE-20"], "pred": "CWE-761", "pred_path": ["CWE-664", "CWE-404", "CWE-763", "CWE-761"], "total_tokens": 5246}
+{"id": "Chrome:39595f8d4d:5067", "gold": "CWE-200", "gold_path": ["CWE-664", "CWE-668", "CWE-200"], "pred": "CWE-483", "pred_path": ["CWE-691", "CWE-670", "CWE-483"], "total_tokens": 3721}
+{"id": "linux:5f5bc6b1e2:21920", "gold": "CWE-362", "gold_path": ["CWE-664", "CWE-662", "CWE-362"], "pred": "CWE-363", "pred_path": ["CWE-664", "CWE-662", "CWE-362", "CWE-367", "CWE-363"], "total_tokens": 12093}
+{"id": "ImageMagick:9eedb5660f:31030", "gold": "CWE-770", "gold_path": ["CWE-664", "CWE-400", "CWE-770"], "pred": "CWE-391", "pred_path": ["CWE-703", "CWE-754", "CWE-391"], "total_tokens": 2517}
