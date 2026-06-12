@@ -16,6 +16,8 @@ Strategy & Knob & Tokens/ex & Leaf (\%) & Category (\%) \\
 Greedy           & ---      & $1{,}561$  & $14.7$            & $28.7$ \\
 Self-consistency & $N{=}4$  & $6{,}246$  & $16.6 \pm 0.4$    & $31.8 \pm 1.0$ \\
 Self-consistency & $N{=}8$  & $12{,}493$ & $16.5 \pm 1.1$    & $31.5 \pm 1.0$ \\
+Best-of-$N$      & $N{=}8$  & $15{,}836$ & $21.1$            & $39.5$ \\
+Beam             & $w{=}4$  & $3{,}753$  & $17.0$            & $35.0$ \\
 $\mctstax$       & $I{=}8$  & $6{,}695$  & $22.3 \pm 0.1$    & $40.2 \pm 0.4$ \\
 $\mctstax$       & $I{=}16$ & $10{,}669$ & $22.9 \pm 0.1$    & $39.5 \pm 0.4$ \\
 $\mctsreas$      & $I{=}2$  & $5{,}257$  & $\mathbf{34.8 \pm 0.4}$ & $\mathbf{50.4 \pm 0.4}$ \\
@@ -25,7 +27,8 @@ $\mctsreas$      & $I{=}8$  & $14{,}142$ & $33.9 \pm 0.3$    & $48.1 \pm 0.3$ \\
 \bottomrule
 \end{tabular}
 \caption{Pilot budget grid (GPT-4.1-nano, BigVul diff$+$msg, $n{=}300$, $5$
-seeds). Tokens/ex doubles as the knob$\to$tokens calibration used to set
+seeds; best-of-$N$ and beam: $1$ seed, best-of-$N$ $n{=}289$ after API
+failures). Tokens/ex doubles as the knob$\to$tokens calibration used to set
 compute-matched comparison points.}
 \label{tab:a2}
 \end{table}

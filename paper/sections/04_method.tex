@@ -10,7 +10,7 @@ rather than prompt engineering.
 
 \begin{figure}[t]
 \centering
-\input{figures/fig_architecture}
+\includegraphics[width=0.95\linewidth]{figures/figure_1.png}
 \caption{Shared architecture. Every strategy drives the same frozen policy LLM
 through the same three operations and differs only in the search controller it
 plugs in; the reward signal (self-evaluation or external judge) is used only by
@@ -84,7 +84,7 @@ compounding (Proposition~\ref{prop:cascade}).
 
 \begin{figure}[t]
 \centering
-\input{figures/fig_search_spaces}
+\includegraphics[width=0.95\linewidth]{figures/figure_2.png}
 \caption{The two MCTS search spaces. $\mctstax$ (left) walks the label tree and
 must pick a coarse category before it has reasoned about the patch; a wrong
 first move makes the gold leaf unreachable. $\mctsreas$ (right) searches over

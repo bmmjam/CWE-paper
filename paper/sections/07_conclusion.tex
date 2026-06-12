@@ -9,9 +9,11 @@ fidelity, we separate the value of \emph{search structure} from the value of
 
 Searching a free-form reasoning trajectory beats searching the output taxonomy by
 $+12$ leaf points at \emph{half} the token budget on the weak policy
-($p{<}10^{-4}$), and on the strong one alike, because taxonomy search commits to
-coarse categories early and compounds the error---making the \emph{search space}
-the primary design lever, above budget or reward. Indeed, the reasoning
+($p{<}10^{-4}$), and on four of five policies overall, because taxonomy search
+commits to coarse categories early and compounds the error---making the
+\emph{search space} the primary design lever, above budget or reward. The margin
+closes, and at the premium end reverses, as the policy strengthens: a policy that
+reasons well unaided no longer needs the scaffold. Indeed, the reasoning
 strategy's accuracy is flat in its iteration knob: the scaffold (reason, then
 commit to a leaf directly), not the tree search on top, carries the gain. At matched compute, reward-guided tree search also delivers a clear gain on
 a weak policy ($+8.2$ leaf points over greedy, $+6.4$ over self-consistency) but a

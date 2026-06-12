@@ -4,3 +4,8 @@ google/gemini-2.5-flash-lite,self_consistency,n,8,13,150,0.2,0.3067,0.2533,16472
 google/gemini-2.5-flash-lite,self_consistency,n,8,42,150,0.18,0.2667,0.2233,16543.2
 google/gemini-2.5-flash-lite,self_consistency,n,8,1337,150,0.2067,0.3067,0.2567,16633.6
 google/gemini-2.5-flash-lite,mcts_tax,iterations,16,13,150,0.2467,0.3467,0.2967,13205.6
+google/gemini-2.5-flash-lite,mcts_tax,iterations,16,42,150,0.2467,0.3467,0.2967,13205.7
+google/gemini-2.5-flash-lite,mcts_tax,iterations,16,1337,150,0.2467,0.3467,0.2967,13207.6
+google/gemini-2.5-flash-lite,mcts_reason,iterations,8,13,150,0.3133,0.42,0.3667,15041.7
+google/gemini-2.5-flash-lite,mcts_reason,iterations,8,42,150,0.3133,0.42,0.3667,15034.7
+google/gemini-2.5-flash-lite,mcts_reason,iterations,8,1337,150,0.32,0.4267,0.3733,15033.8

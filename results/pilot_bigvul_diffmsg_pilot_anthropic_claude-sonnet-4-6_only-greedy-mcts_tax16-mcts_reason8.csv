@@ -1,0 +1,4 @@
+model,strategy,knob,knob_val,seed,n,leaf_acc,pillar_acc,hier_f1,mean_tokens
+anthropic/claude-sonnet-4.6,greedy,-,0,13,120,0.3,0.475,0.3875,1986.0
+anthropic/claude-sonnet-4.6,mcts_tax,iterations,16,13,120,0.35,0.4917,0.4208,18550.3
+anthropic/claude-sonnet-4.6,mcts_reason,iterations,8,13,120,0.3167,0.5,0.4083,18658.3

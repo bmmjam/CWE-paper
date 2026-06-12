@@ -5,10 +5,12 @@
 Synthesizing RQ1--RQ4 yields a simple decision rule for test-time search on this
 structured-output task:
 \begin{enumerate}
-\item \textbf{Search the reasoning, not the taxonomy.} $\mctsreas$ beats $\mctstax$
-on both policies (Table~\ref{tab:m4m5}), and does so even at \emph{half} the
-budget (Figure~\ref{fig:budget}); committing to coarse categories early is the
-single most costly design choice.
+\item \textbf{Search the reasoning, not the taxonomy --- for weak-to-mid
+policies.} $\mctsreas$ beats $\mctstax$ on four of five policies
+(Table~\ref{tab:m4m5}), and on the weak policy even at \emph{half} the budget
+(Figure~\ref{fig:budget}); committing to coarse categories early is the single
+most costly design choice. On the premium policy the two are within noise of
+each other and of greedy.
 \item \textbf{Spend on search when the policy is weak.} The marginal gain over
 greedy is large for a weak policy and shrinks toward zero as policy strength
 $\polacc$ grows (RQ2); on a strong policy near the task's accuracy ceiling,
@@ -53,7 +55,10 @@ leaf directly, skipping level-by-level commitment), not to the tree-search
 machinery on top. This refines the headline: the search-space design dominates
 both the budget \emph{and the amount of search itself}. By contrast, $\mctstax$
 does benefit from iterations at small $I$ (Figure~\ref{fig:budget}), but
-saturates by $I{\approx}8$ at a level far below the reasoning scaffold.
+saturates by $I{\approx}8$ at a level far below the reasoning scaffold. The
+scaffold reading also explains the premium-policy reversal (RQ4): externalized
+step-by-step reasoning is a crutch the strongest policy no longer needs, so what
+remains useful there is only the taxonomy's fine-grained discrimination.
 
 \subsection{Reward fidelity is not the bottleneck}
 Replacing self-evaluation with a stronger external judge (Claude-Haiku-4.5

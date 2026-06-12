@@ -27,17 +27,23 @@ CSV_MAIN = RES / ("pilot_bigvul_diffmsg_pilot_gpt-4-1-nano_only-greedy-"
                   "self_consistency8-mcts_tax16-mcts_reason8.csv")
 CSV_CURVE = RES / ("pilot_bigvul_diffmsg_pilot_gpt-4-1-nano_only-mcts_reason2-"
                    "mcts_reason4-mcts_reason6-mcts_tax8-self_consistency4.csv")
+CSV_BON = RES / "pilot_bigvul_diffmsg_pilot_gpt-4-1-nano_only-best_of_n8-beam4.csv"
+CSV_BEAM = RES / "pilot_bigvul_diffmsg_pilot_gpt-4-1-nano_only-beam4.csv"
 
 STYLE = {  # strategy -> (label, color, marker)
     "greedy": ("Greedy", "#555555", "s"),
     "self_consistency": ("Self-consistency", "#1f77b4", "o"),
+    "best_of_n": ("Best-of-N", "#ff7f0e", "v"),
+    "beam": ("Beam", "#9467bd", "P"),
     "mcts_tax": ("MCTS-Tax", "#d62728", "^"),
     "mcts_reason": ("MCTS-Reason", "#2ca02c", "D"),
 }
 
 
 def budget_curve() -> None:
-    df = pd.concat([pd.read_csv(CSV_MAIN), pd.read_csv(CSV_CURVE)], ignore_index=True)
+    frames = [pd.read_csv(p) for p in (CSV_MAIN, CSV_CURVE, CSV_BON, CSV_BEAM)
+              if p.exists()]
+    df = pd.concat(frames, ignore_index=True)
     g = (df.groupby(["strategy", "knob_val"])
            .agg(leaf=("leaf_acc", "mean"), leaf_sd=("leaf_acc", "std"),
                 cat=("pillar_acc", "mean"), cat_sd=("pillar_acc", "std"),

@@ -38,8 +38,9 @@ will be added with the headline runs.
 The seven strategies of \S\ref{sec:method} all use the same policy and prompt.
 We use four cheap-tier policies spanning a range of strength
 (GPT-4.1-nano, Gemini-2.5-Flash-Lite, DeepSeek-V3.1, Claude-Haiku-4.5) for the
-pilot, adding $\ge 1$ premium policy (e.g.\ Claude-Sonnet-4.6 / GPT-4o) in the
-headline phase to populate the strong end of the $\polacc$ axis required for H2.
+pilot, plus a premium policy (Claude-Sonnet-4.6) on a reduced sample to probe
+the strong end of the $\polacc$ axis required for H2; the headline phase extends
+the premium coverage.
 At least two open-weight models (DeepSeek $+$ Qwen2.5-Coder-32B or Llama-3.3-70B)
 are included for reproducibility. The external judge is a model stronger than the
 current policy; each $(\policy,\text{judge})$ pair is logged.
@@ -106,7 +107,11 @@ across-seed std is $\le 1.0$. Both gaps are significant by paired McNemar
 $p{=}2\!\times\!10^{-3}$, $n{=}300$). Self-consistency---majority vote over
 independent samples, ignoring the reward---captures only $+1.8$ points, whereas
 MCTS, using the same self-evaluation reward to \emph{steer} the search, captures
-$+8.2$. (ii) On the strong policy the same search yields little ($+1.9$ leaf) to
+$+8.2$. Best-of-$N$ ($N{=}8$), which keeps the reward but drops the tree
+(independent samples, return the highest-scoring path), lands in between: $+6.4$
+leaf points at a \emph{larger} budget ($15.8$k vs.\ $10.7$k tokens). Reading the
+three together: the reward signal alone recovers most of the sampling family's
+gap to tree search, and the tree adds the rest while spending less. (ii) On the strong policy the same search yields little ($+1.9$ leaf) to
 nothing ($-2.3$ category): the strong policy is already near the signal available
 in the input, so reward-guided exploration mostly reconfirms or drifts. Test-time
 search here acts as a \emph{compensator for weak policies}, not a universal
@@ -118,21 +123,22 @@ greedy (category accuracy) \emph{decreases monotonically} with policy strength
 $\polacc$:
 %
 \begin{center}\small
-\begin{tabular}{lccc}
+\begin{tabular}{lccccc}
 \toprule
-Policy & nano & DeepSeek-V3.1 & Haiku \\
-$\polacc$ (greedy cat.) & $0.29$ & $0.37$ & $0.47$ \\
+Policy & Gemini-FL & nano & DeepSeek & Haiku & Sonnet \\
+$\polacc$ (greedy cat.) & $0.28$ & $0.29$ & $0.37$ & $0.47$ & $0.48$ \\
 \midrule
-$\gain$ ($\mctstax$, cat.) & $+10.8$ & $+2.0$ & $-2.3$ \\
-$\gain$ ($\mctsreas$, cat.) & $+19.4$ & $+8.2$ & $-3.8$ \\
+$\gain$ ($\mctstax$, cat.) & $+6.7$ & $+10.8$ & $+2.0$ & $-2.3$ & $+1.7$ \\
+$\gain$ ($\mctsreas$, cat.) & $+14.2$ & $+19.4$ & $+8.2$ & $-3.8$ & $+2.5$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 %
-The taxonomy-search gain falls from $+10.8$ points at the weak end to $-2.3$ at
-the strong end, crossing zero near $\polacc\approx0.45$; the reasoning-search
-gain is uniformly higher but follows the same downward slope ($+19.4$ to
-$-3.8$).
+The taxonomy-search gain falls from $+7$--$11$ points at the weak end
+($\polacc \approx 0.28$, two independent policies) to $\approx 0 \pm 3$ at the
+strong end (Haiku $-2.3$, Sonnet $+1.7$); the reasoning-search gain starts far
+higher ($+14$--$19$) and collapses onto the same near-zero band ($-3.8$ /
+$+2.5$). At the strong end the residual gains are within pilot noise of zero.
 
 This \textbf{contradicts our pre-registered H2}, which anticipated that gain would
 \emph{increase} with $\polacc$ (a threshold $\alpha^\star$ below which search
@@ -207,7 +213,12 @@ $p{=}3.2\!\times\!10^{-4}$, $n{=}300$; strong: $28.4$ vs.\ $26.6$, $+1.8$), with
 the advantage shrinking as the policy strengthens (cf.\ RQ2). On the strong
 policy it trades a small category drop ($42.9$ vs.\ greedy $46.7$) for a leaf
 gain, reaching finer leaves at the cost of occasionally landing in a neighbouring
-category.
+category. On the premium policy (Sonnet, $n{=}120$, $1$ seed) the ordering
+\emph{reverses} on leaf accuracy ($31.7$ vs.\ $35.0$ for $\mctstax$): a policy
+that already reasons well in a single pass gains nothing from an external
+reasoning scaffold, while the taxonomy structure still adds a little fine-grained
+discrimination. The search-space advantage, like the search gain itself, is a
+property of \emph{weak-to-mid} policies.
 
 \paragraph{Strict budget matching.}
 Sweeping $\mctsreas$ over $I \in \{2,4,6,8\}$ ($n{=}300$, $5$ seeds,
@@ -238,9 +249,10 @@ Table~\ref{tab:matched}).
 \centering
 \includegraphics[width=\linewidth]{figures/budget_curve.pdf}
 \caption{Accuracy vs.\ token budget (GPT-4.1-nano, $n{=}300$, mean $\pm$ std over
-$5$ seeds; greedy is deterministic). $\mctsreas$ dominates at every budget and is
-flat in its iteration knob; $\mctstax$ saturates between $I{=}8$ and $I{=}16$;
-self-consistency barely improves on greedy. What is searched matters far more
-than how much.}
+$5$ seeds; greedy, beam, and best-of-$N$ are single runs). $\mctsreas$ dominates
+at every budget and is flat in its iteration knob; $\mctstax$ saturates between
+$I{=}8$ and $I{=}16$; best-of-$N$ (reward, no tree) sits between
+self-consistency and $\mctstax$; self-consistency barely improves on greedy.
+What is searched matters far more than how much.}
 \label{fig:budget}
 \end{figure}
