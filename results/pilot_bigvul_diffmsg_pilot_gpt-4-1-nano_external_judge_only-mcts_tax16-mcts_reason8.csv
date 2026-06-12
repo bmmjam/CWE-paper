@@ -1,0 +1,7 @@
+model,strategy,knob,knob_val,seed,n,leaf_acc,pillar_acc,hier_f1,mean_tokens
+gpt-4.1-nano,mcts_tax,iterations,16,13,300,0.23,0.4033,0.3167,18288.5
+gpt-4.1-nano,mcts_tax,iterations,16,42,300,0.2267,0.4,0.3133,18288.4
+gpt-4.1-nano,mcts_tax,iterations,16,1337,300,0.2233,0.3967,0.31,18290.7
+gpt-4.1-nano,mcts_reason,iterations,8,13,300,0.3567,0.4967,0.4267,17882.7
+gpt-4.1-nano,mcts_reason,iterations,8,42,300,0.36,0.4933,0.4267,17953.6
+gpt-4.1-nano,mcts_reason,iterations,8,1337,300,0.3467,0.4933,0.42,17952.3

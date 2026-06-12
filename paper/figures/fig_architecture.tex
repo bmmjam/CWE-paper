@@ -1,0 +1,80 @@
+\begin{tikzpicture}[
+  execute at begin picture={
+    \definecolor{rewardblue}{RGB}{31,119,180}
+    \definecolor{mctsred}{RGB}{214,39,40}
+    \definecolor{mctsgreen}{RGB}{44,160,44}
+  },
+  font=\footnotesize,
+  >=Stealth,
+  box/.style={
+    rounded corners=2pt,
+    draw=black!60,
+    line width=0.45pt,
+    align=center,
+    inner sep=3.5pt,
+    fill=black!6
+  },
+  smallbox/.style={
+    rounded corners=1.5pt,
+    draw=black!60,
+    line width=0.35pt,
+    align=center,
+    inner sep=2pt,
+    fill=white
+  },
+  arrow/.style={->, line width=0.45pt},
+  reward/.style={
+    rounded corners=2pt,
+    draw=rewardblue,
+    line width=0.55pt,
+    align=center,
+    inner sep=3pt,
+    fill=rewardblue!10
+  }
+]
+
+\node[box, text width=1.25cm, minimum height=0.78cm] (input) at (0,0)
+  {code patch\\(diff + msg)};
+
+\node[box, text width=2.05cm, minimum height=1.75cm] (policy) at (2.35,0)
+  {};
+\node[align=center] at ([yshift=0.57cm]policy.center) {policy LLM\\(frozen)};
+\node[smallbox, text width=1.55cm] (rank) at ([yshift=0.08cm]policy.center)
+  {rank children};
+\node[smallbox, text width=1.55cm, below=1pt of rank] (prop)
+  {propose step};
+\node[smallbox, text width=1.55cm, below=1pt of prop] (commit)
+  {commit leaf};
+
+\node[box, text width=1.45cm, minimum height=0.76cm] (controller) at (4.85,0)
+  {search\\controller};
+
+\node[anchor=west, align=left, inner sep=1pt] (ladder) at (5.76,0.02) {%
+  Greedy\\
+  Self-cons. (N)\\
+  Best-of-N\\
+  Beam (w)\\
+  {\color{mctsred}MCTS-Tax (I)}\\
+  {\color{mctsgreen}MCTS-Reason (I)}%
+};
+\draw[black!35, line width=0.35pt] ([xshift=-0.12cm,yshift=0.43cm]ladder.west) --
+  ([xshift=-0.12cm,yshift=-0.52cm]ladder.west);
+
+\node[reward, text width=1.55cm, minimum height=0.70cm] (reward) at (4.85,-1.45)
+  {reward $r\in[0,1]$};
+\node[smallbox, draw=rewardblue, text width=0.92cm,
+  below left=2pt and -1pt of reward.south] (self) {self-eval};
+\node[smallbox, draw=rewardblue, text width=1.05cm,
+  below right=2pt and -1pt of reward.south] (judge) {external\\judge};
+
+\node[box, text width=1.32cm, minimum height=0.78cm] (output) at (7.85,0)
+  {CWE path\\category $\to$ leaf};
+
+\draw[arrow] (input) -- (policy);
+\draw[arrow] (policy) -- (controller);
+\draw[arrow] (controller) -- (output);
+\draw[arrow] (controller) -- (reward);
+\draw[arrow, dashed, draw=rewardblue]
+  (reward.west) .. controls +(left:0.75cm) and +(down:0.85cm) .. (controller.south);
+
+\end{tikzpicture}

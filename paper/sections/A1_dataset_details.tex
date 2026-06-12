@@ -1,0 +1,74 @@
+\section{Dataset Construction Details}
+\label{app:data}
+
+This appendix documents the data actually used in the pilot experiments
+(\S\ref{sec:results}); steps that belong to the final protocol but are not yet
+exercised by the pilot are explicitly marked \emph{planned}.
+
+\subsection{Source and input construction (pilot)}
+All pilot examples come from BigVul \citep{fan2020bigvul}, which provides, for
+each vulnerability-fixing commit in C/C++ projects, the vulnerable function
+(\texttt{func\_before}), the fixed function (\texttt{func\_after}), the commit
+message, and a CVE-derived CWE label. We keep rows marked vulnerable whose CWE
+normalizes to a leaf of our tree (below), and render each example as a
+\emph{unified diff} from the vulnerable to the fixed function, prefixed by an
+instruction comment (``\texttt{'-'} lines are the VULNERABLE code \ldots
+classify the weakness in the removed/vulnerable code'') and the first 500
+characters of the commit message. The diff localizes the vulnerable lines and is
+the input representation under which models clear the $\approx\!40\%$ category
+ceiling we observed on raw functions. Diffs with fewer than three lines are
+dropped; code is truncated at 5{,}000 characters at prompt time
+(\S\ref{app:prompts}).
+
+\subsection{Splits (pilot)}
+The dev set ($n{=}50$) is drawn from the BigVul validation split and the pilot
+set ($n{=}500$) from the BigVul test split --- so prompt iteration on dev cannot
+overfit the pilot --- using per-CWE stratified round-robin sampling (seed 42).
+Pilot statistics: 500 examples, 18 distinct CWE leaves, 73 distinct projects;
+median diff length 15 lines (mean 27). Category composition:
+\textsc{buffer} 214, \textsc{injection} 117, \textsc{access} 77,
+\textsc{lifetime} 54, \textsc{numeric} 28, \textsc{resource} 5,
+\textsc{control} 5; the largest leaves are CWE-119 (128), CWE-20 (112),
+CWE-125 (68), CWE-200 (49). Most reported runs use the first 300 (nano) or 150
+(Haiku, DeepSeek) examples of this fixed, shuffled file; per-example outputs are
+released for paired analyses.
+
+\subsection{CWE trees}
+\paragraph{Full tree.} We download the official MITRE CWE corpus
+(\texttt{cwec\_latest.xml}), extract the Research-Concepts view (View-1000)
+ChildOf hierarchy rooted at the ten Pillars, and resolve multi-parent nodes to a
+\emph{primary} parent by breadth-first search from the pillars (first, i.e.\
+minimal-depth, discovery wins). The result has 944 nodes and 716 leaves (depths
+0--5) and is released as adjacency JSON with SHA-256
+\texttt{7aeff209\ldots{}26948a6}.
+
+\paragraph{Coarse code-aligned tree (pilot).} MITRE pillars are research
+abstractions (``Improper Control of a Resource Through its Lifetime'') that even
+strong policies place poorly, which floors level-0 accuracy and makes the
+policy-strength axis (RQ2) unreadable. For the pilot we therefore regroup the
+22 dataset CWEs into a 2-level tree with 7 code-recognizable super-categories
+(spatial memory, temporal memory / lifetime, resource exhaustion, numeric,
+injection / input handling, control-flow, access control / info exposure /
+misc); leaves keep their MITRE names and descriptions. The tree is released
+with SHA-256 \texttt{f3013c19\ldots{}9c79aa}. The full-depth tree is used by the
+final protocol (\emph{planned}).
+
+\subsection{Multi-source pooling and deduplication (planned)}
+The final protocol pools PrimeVul \citep{ding2024primevul}, DiverseVul
+\citep{chen2023diversevul}, BigVul, and CVEfixes \citep{bhandari2021cvefixes},
+with function-level MinHash deduplication (Jaccard $\ge 0.85$) and
+repository-level disjointness across splits; the pilot uses a single source
+(BigVul) with splits inherited from the dataset's own validation/test
+partition, so cross-source leakage is not yet a concern at pilot scale.
+
+\subsection{Pretraining-leakage slice (planned)}
+Because public CVEs may appear in pretraining corpora, the final protocol
+reports a slice restricted to CVEs published after each model's training
+cutoff. At pilot scale we note that all four policies see the same examples, so
+leakage would shift absolute numbers rather than the strategy comparisons that
+are the object of study.
+
+\subsection{Datasheet (planned)}
+A Datasheets-for-Datasets \citep{gebru2021datasheets} entry (motivation,
+composition, collection, preprocessing, uses, distribution, maintenance) will
+accompany the released benchmark bundle.

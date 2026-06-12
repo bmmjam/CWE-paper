@@ -1,0 +1,10 @@
+model,strategy,knob,knob_val,seed,n,leaf_acc,pillar_acc,hier_f1,mean_tokens
+deepseek/deepseek-chat-v3.1,self_consistency,n,8,13,150,0.28,0.3933,0.3367,13426.2
+deepseek/deepseek-chat-v3.1,self_consistency,n,8,42,130,0.2923,0.3769,0.3346,13615.2
+deepseek/deepseek-chat-v3.1,self_consistency,n,8,1337,150,0.2733,0.3933,0.3333,13483.6
+deepseek/deepseek-chat-v3.1,mcts_tax,iterations,16,13,150,0.2533,0.3867,0.32,11247.2
+deepseek/deepseek-chat-v3.1,mcts_tax,iterations,16,42,150,0.2533,0.3867,0.32,11253.6
+deepseek/deepseek-chat-v3.1,mcts_tax,iterations,16,1337,150,0.2533,0.3867,0.32,11257.5
+deepseek/deepseek-chat-v3.1,mcts_reason,iterations,8,13,150,0.2867,0.46,0.3733,17523.2
+deepseek/deepseek-chat-v3.1,mcts_reason,iterations,8,42,150,0.28,0.4533,0.3667,17440.8
+deepseek/deepseek-chat-v3.1,mcts_reason,iterations,8,1337,150,0.2667,0.4333,0.35,17439.5

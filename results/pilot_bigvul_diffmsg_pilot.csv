@@ -1,0 +1,14 @@
+model,strategy,knob,knob_val,seed,n,leaf_acc,pillar_acc,hier_f1,mean_tokens
+gpt-4.1-nano,greedy,-,0,13,500,0.166,0.302,0.234,1582.5
+gpt-4.1-nano,self_consistency,n,4,13,500,0.172,0.318,0.245,6319.9
+gpt-4.1-nano,self_consistency,n,4,42,500,0.174,0.302,0.238,6314.4
+gpt-4.1-nano,self_consistency,n,4,1337,500,0.182,0.33,0.256,6320.7
+gpt-4.1-nano,self_consistency,n,8,13,500,0.17,0.308,0.239,12643.1
+gpt-4.1-nano,self_consistency,n,8,42,500,0.184,0.322,0.253,12631.7
+gpt-4.1-nano,self_consistency,n,8,1337,500,0.186,0.326,0.256,12638.1
+gpt-4.1-nano,mcts_tax,iterations,8,13,500,0.232,0.408,0.32,6781.2
+gpt-4.1-nano,mcts_tax,iterations,8,42,500,0.232,0.404,0.318,6787.8
+gpt-4.1-nano,mcts_tax,iterations,8,1337,500,0.232,0.41,0.321,6780.8
+gpt-4.1-nano,mcts_tax,iterations,16,13,500,0.242,0.4,0.321,10824.9
+gpt-4.1-nano,mcts_tax,iterations,16,42,500,0.244,0.4,0.322,10828.3
+gpt-4.1-nano,mcts_tax,iterations,16,1337,500,0.242,0.404,0.323,10823.8

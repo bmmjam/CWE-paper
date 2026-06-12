@@ -1,0 +1,90 @@
+\section{Introduction}
+\label{sec:intro}
+
+% --- Motivation ---
+% 1. Test-time scaling is the dominant recipe for "make the LLM reason better".
+% 2. MCTS is the most elaborate (and most expensive) member of that family.
+% 3. Most evidence is confounded: more search == more compute.
+
+Test-time search has become a default recipe for coaxing more reliable reasoning
+out of large language models (LLMs): sample several chains and vote
+(self-consistency), score samples and keep the best (best-of-$N$), expand a beam,
+or run Monte Carlo Tree Search (MCTS) over intermediate steps. Reported gains,
+however, are frequently confounded: a search method issuing dozens of model calls
+is compared against a single greedy call, so it is unclear whether the
+improvement comes from \emph{search structure} or simply from \emph{spending more
+compute}.
+
+\begin{figure}[t]
+\begin{lstlisting}
+// gold: CWE-416 (Use After Free)
+   int new_high = tree[current].high;
+   tree[current].high = low-1;
+   add_range(ctx, cmap, high+1, new_high, ...);
++  tree = cmap->tree;   // fix: re-fetch; add_range may realloc
+ }
+ if (tree[current].low > high) {
+\end{lstlisting}
+\caption{A motivating pilot example (ghostscript; abridged). \texttt{add\_range}
+may reallocate \texttt{cmap->tree}, so the subsequent reads through the stale
+\texttt{tree} pointer are a use-after-free (CWE-416). Greedy answers CWE-125
+(out-of-bounds \emph{read}); self-consistency at $8\times$ the budget agrees with
+greedy; MCTS over the taxonomy spends $10.7$k tokens, commits at the first level
+to the \emph{spatial} out-of-bounds category, and lands on CWE-787 --- the wrong
+branch, unrecoverable. MCTS over a \emph{reasoning trajectory} notices the
+realloc-then-reuse pattern and answers CWE-416 at a comparable budget. More
+compute did not help; searching a different space did.}
+\label{fig:motivating}
+\end{figure}
+
+% --- Problem framing ---
+We study this question on \emph{hierarchical vulnerability classification}: given
+a code fragment, predict a root-to-leaf path in the CWE taxonomy. This task is a
+good testbed because (i) it has a real, structured output space with a natural
+search tree; (ii) errors compound across levels, so search has a plausible
+mechanism to help \emph{or} to hurt; and (iii) public, CWE-labeled datasets exist.
+
+% --- The confound we remove ---
+\paragraph{The compute confound.}
+Our central methodological commitment is \textbf{compute-matched comparison}: every
+strategy is evaluated across a grid of token budgets $\budget$, and each method's
+knob ($N$, beam width, or MCTS iterations) is tuned so its expected token spend
+matches $\budget$. The headline result is an accuracy-vs-budget curve, not a single
+``MCTS beats greedy'' number.
+
+% --- Two axes the literature entangles ---
+\paragraph{Three axes we isolate.}
+Whether and how search helps plausibly depends on (a) the base policy's strength,
+(b) the fidelity of the reward guiding it, and (c)---we argue, most
+importantly---the \emph{space} the search operates in. We vary \emph{policy
+strength} $\polacc$ across LLMs, contrast self-evaluation against a stronger
+external judge, and compare searching the output \emph{taxonomy} against searching
+a free-form \emph{reasoning trajectory}.
+
+% --- Contributions ---
+\paragraph{Contributions.}
+\begin{enumerate}
+\item Our central result: \textbf{what you search over dominates how much you
+search}. MCTS over a reasoning trajectory beats MCTS over the taxonomy by $+12$
+leaf-accuracy points at \emph{half} the token budget ($p{<}10^{-4}$), and its
+accuracy is flat in the iteration knob---the reasoning \emph{scaffold}, not the
+search machinery, carries the gain. A cascade analysis shows why: taxonomy search
+commits to a wrong coarse category on $60\%$ of examples and cannot recover,
+whereas reasoning search defers commitment (\S\ref{sec:results}).
+\item A \textbf{compute-matched protocol} for evaluating test-time search on a
+structured-output task, removing the search-vs-compute confound, with a controlled
+comparison of strategies (greedy, self-consistency, best-of-$N$, beam, $\mctstax$,
+$\mctsreas$) on public CWE-labeled data (\S\ref{sec:experiments}).
+\item The marginal gain of search \emph{decreases} with policy strength: large for
+weak policies, negligible-to-negative for strong ones---test-time search
+compensates for weak policies rather than improving strong ones
+(\S\ref{sec:results}).
+\item A stronger external-judge reward does not improve search, locating the
+bottleneck in the policy and the search structure rather than reward fidelity
+(\S\ref{sec:results}).
+\end{enumerate}
+
+% --- Honest framing ---
+We emphasize that this is a \emph{diagnostic} study: a finding that MCTS does not
+beat cheaper search at matched budget is a valid and useful result, and we design
+the paper so its contribution does not depend on the sign of that result.

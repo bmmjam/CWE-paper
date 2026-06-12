@@ -1,0 +1,50 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented a compute-matched study of test-time search for hierarchical CWE
+classification, holding the policy LLM and prompt fixed and comparing seven
+strategies at equal token budgets. By isolating policy strength and reward
+fidelity, we separate the value of \emph{search structure} from the value of
+\emph{extra compute} --- a confound that pervades reported MCTS-for-LLM gains.
+
+Searching a free-form reasoning trajectory beats searching the output taxonomy by
+$+12$ leaf points at \emph{half} the token budget on the weak policy
+($p{<}10^{-4}$), and on the strong one alike, because taxonomy search commits to
+coarse categories early and compounds the error---making the \emph{search space}
+the primary design lever, above budget or reward. Indeed, the reasoning
+strategy's accuracy is flat in its iteration knob: the scaffold (reason, then
+commit to a leaf directly), not the tree search on top, carries the gain. At matched compute, reward-guided tree search also delivers a clear gain on
+a weak policy ($+8.2$ leaf points over greedy, $+6.4$ over self-consistency) but a
+negligible one on a strong policy ($+1.9$); self-consistency---sampling without a
+reward---helps neither. The marginal value of search thus \emph{decreases} with
+policy strength, contradicting the intuition that better policies search better.
+The binding constraint is the accuracy ceiling of the policy on the task, not the
+search budget: once a policy nears that ceiling, additional search reconfirms or
+drifts. We read this as a budget-aware rule (\S\ref{sec:analysis}): spend on search
+when the policy is weak and the reward is informative; spend on a better policy
+otherwise.
+
+\paragraph{A budget-aware decision rule.}
+Our main practical deliverable is a rule for \emph{when} to spend on search:
+read off the policy's pillar accuracy $\polacc$ and the available budget
+$\budget$, then choose greedy, self-consistency, or MCTS accordingly
+(\S\ref{sec:analysis}).
+
+\paragraph{Future work.}
+A trained process reward model (PRM) could shift the reward-bottleneck
+conclusion; we left it out to keep the study GPU-free, and flag it as the most
+informative next experiment. Extending the protocol to multi-language data and to
+detection/localization (beyond classification) are natural follow-ups.
+
+\paragraph{Broader Impact.}
+LLM-assisted vulnerability triage is already deployed under tight cost budgets;
+our results give practitioners a calibrated answer to ``is structured search
+worth its tokens here?''---often the answer is to fix the input representation
+and the search space before buying more compute, which lowers both cost and the
+energy footprint of security tooling. At the same time, automated CWE labels are
+a triage aid, not a verdict: our best pilot configuration still mislabels most
+samples at the leaf level, and a false negative can hide a real weakness.
+Deployments should keep a human reviewer in the loop and treat predicted labels
+as prioritization signals rather than ground truth. The study uses only public,
+already-disclosed vulnerabilities and fixes, so it does not create new
+disclosure risk.

@@ -1,0 +1,72 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Test-time scaling and search for LLMs.}
+Sampling several chains of thought and voting (self-consistency)
+\citep{wang2023selfconsistency} is the simplest way to spend more inference
+compute; best-of-$N$ adds a verifier that selects among samples
+\citep{cobbe2021verifiers}, and repeated sampling alone scales surprisingly far
+\citep{brown2024monkeys}. Structured alternatives organize generation as explicit
+search: Tree-of-Thoughts \citep{yao2023tot}, MCTS-style planning over reasoning
+states \citep{hao2023rap}, agentic tree search \citep{zhou2024lats}, and a family
+of MCTS-for-reasoning systems such as rStar \citep{qi2024rstar}, AlphaMath
+\citep{chen2024alphamath}, and ReST-MCTS$^{*}$ \citep{zhang2024restmcts}. Studies
+of compute-optimal inference \citep{snell2024scaling,wu2025inference} show that the
+best strategy depends on the difficulty of the problem and the strength of the
+base model. Most system papers in this family, however, report a search method
+issuing dozens of calls against a single greedy call, leaving the contribution of
+search \emph{structure} (as opposed to extra compute) unidentified.
+
+\paragraph{Compute-matched comparison of inference strategies.}
+A smaller line of work controls for compute explicitly. \citet{chen2024morecalls}
+analyze when more LLM calls help or hurt; \citet{olausson2024selfrepair} show that
+self-repair for code loses much of its apparent advantage once its extra calls are
+budget-matched against plain sampling; \citet{snell2024scaling} compare revisions,
+best-of-$N$, and tree search per unit of compute; and \citet{stroebl2024flaws}
+show that resampling against an imperfect verifier saturates and then degrades.
+We bring this discipline to a structured-output security task, and additionally
+match budgets \emph{across search spaces} (taxonomy vs.\ reasoning trajectory),
+an axis these works do not vary.
+
+\paragraph{Process rewards, verifiers, and self-evaluation.}
+Search needs a value signal. Trained process reward models outperform outcome
+supervision on math \citep{uesato2022outcome,lightman2024verify}, but require
+labeled step data we deliberately exclude (\S\ref{sec:experiments}); we instead
+use the two zero-shot signals available in practice: the policy's own
+self-evaluation and a stronger external LLM judge \citep{zheng2023judge}. Both are
+known to be imperfect: LLMs are unreliable judges of their own reasoning
+\citep{huang2024selfcorrect}, and imperfect verifiers cap the benefit of more
+search \citep{stroebl2024flaws}. Our RQ3 quantifies exactly this: whether upgrading
+reward fidelity moves accuracy at all on our task (it does not).
+
+\paragraph{LLMs for vulnerability detection and CWE classification.}
+The encoder era trained graph- and token-based classifiers on labeled functions
+--- Devign \citep{zhou2019devign}, ReVeal \citep{chakraborty2021reveal}, LineVul
+\citep{fu2022linevul} --- mostly as \emph{binary} vulnerable/benign detection.
+PrimeVul \citep{ding2024primevul} showed that label noise and leakage inflate
+these results and that code LLMs remain far from reliable detectors; DiverseVul
+\citep{chen2023diversevul}, BigVul \citep{fan2020bigvul}, and CVEfixes
+\citep{bhandari2021cvefixes} provide the CWE-labeled corpora we build on.
+LLM-era systems add knowledge and agency --- LLM4Vuln \citep{sun2024llm4vuln},
+Vul-RAG \citep{du2024vulrag}, GPTLens \citep{hu2023gptlens} --- but still
+predominantly target detection; fine-grained CWE assignment is usually a flat
+multi-class afterthought, with V2W-BERT \citep{das2021v2wbert} a notable
+hierarchical exception in the pre-LLM setting. Test-time \emph{search} for CWE
+classification under controlled compute has, to our knowledge, not been studied.
+
+\paragraph{Hierarchical classification.}
+Hierarchical text classification has a long tradition of exploiting the label
+tree, from the taxonomy of approaches in \citet{silla2011survey} to neural
+methods such as HMCN \citep{wehrmann2018hmcn}, HiAGM \citep{zhou2020hiagm}, and
+HGCLR \citep{wang2022hgclr}, with dedicated hierarchical metrics
+\citep{kosmopoulos2015evaluation}. The CWE tree gives $\mctstax$ its natural
+search space; our cascade analysis (\S\ref{sec:analysis}) echoes the classic
+error-propagation argument against greedy top-down classification, now in the
+test-time-search setting.
+
+\paragraph{Positioning.}
+Unlike prior MCTS-for-LLM work, we (a) compare strategies \emph{at matched token
+budget} rather than matched iterations, (b) explicitly disentangle policy strength
+from reward fidelity, and (c) contrast search over the output taxonomy against
+search over a reasoning trajectory --- on a public, reproducible CWE-classification
+benchmark.

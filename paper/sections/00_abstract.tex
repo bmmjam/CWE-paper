@@ -1,0 +1,40 @@
+\begin{abstract}
+% Pitch (1-2 sentences): the problem and why it matters.
+Test-time search --- self-consistency, best-of-$N$, beam search, and Monte Carlo
+Tree Search (MCTS) --- is increasingly applied to make large language models (LLMs)
+reason more reliably. Yet reported gains often compare a search method running
+many model calls against a single greedy call, conflating the value of \emph{search}
+with the value of \emph{extra compute}.
+%
+% Gap (1 sentence): what's missing.
+It remains unclear not only \emph{when} structured search helps an LLM, but
+\emph{what it should search over}.
+%
+% Contribution (2-3 sentences): what we do.
+We present a controlled, \textbf{compute-matched} study of test-time search for
+hierarchical vulnerability classification over the Common Weakness Enumeration
+(CWE) taxonomy. Holding the policy LLM, prompt, and token budget fixed, we compare
+search strategies and isolate three axes the literature entangles: \emph{policy
+strength}, \emph{reward fidelity} (self-evaluation vs.\ a stronger external judge),
+and---most consequentially---the \emph{search space}, contrasting MCTS over the
+output taxonomy against MCTS over a free-form reasoning trajectory.
+%
+% Results: the numbers.
+Three findings on a code-vulnerability benchmark (BigVul, patch-diff inputs).
+(i) \emph{What you search over dominates}: MCTS over a reasoning trajectory beats
+MCTS over the taxonomy by $+12$ leaf-accuracy points at \emph{half} the token
+budget ($p{<}10^{-4}$), because taxonomy search commits to a wrong coarse
+category on $60\%$ of examples and cannot recover, whereas reasoning search
+defers commitment; moreover its accuracy is flat in the iteration knob, so the
+gain comes from the reasoning \emph{scaffold} rather than the search machinery.
+(ii) Search compensates \emph{weak} policies (up to $+8$ points over greedy) but
+not strong ones, and its gain shrinks monotonically with policy strength;
+self-consistency (sampling without a reward) captures almost none of it.
+(iii) A stronger external judge leaves taxonomy search unchanged and does not
+survive budget matching on reasoning search---the bottleneck is the policy and
+the search space, not reward fidelity.
+%
+% Impact (1 sentence): why this matters beyond the paper.
+We conclude that the design of the \emph{search space}, not the search budget or
+the reward, is the primary lever for test-time search on structured outputs.
+\end{abstract}

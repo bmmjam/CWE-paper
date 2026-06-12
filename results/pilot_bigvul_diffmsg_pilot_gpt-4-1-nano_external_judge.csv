@@ -1,0 +1,2 @@
+model,strategy,knob,knob_val,seed,n,leaf_acc,pillar_acc,hier_f1,mean_tokens
+gpt-4.1-nano,mcts_tax,iterations,16,13,148,0.2027,0.3851,0.2939,10788.2

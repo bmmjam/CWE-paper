@@ -1,0 +1,17 @@
+model,strategy,knob,knob_val,seed,n,leaf_acc,pillar_acc,hier_f1,mean_tokens
+gpt-4.1-nano,greedy,-,0,13,300,0.1467,0.2867,0.2167,1560.6
+gpt-4.1-nano,self_consistency,n,8,13,300,0.1667,0.3067,0.2367,12496.6
+gpt-4.1-nano,self_consistency,n,8,42,300,0.17,0.3267,0.2483,12488.1
+gpt-4.1-nano,self_consistency,n,8,1337,300,0.18,0.3233,0.2517,12493.6
+gpt-4.1-nano,self_consistency,n,8,2025,300,0.1533,0.31,0.2317,12495.9
+gpt-4.1-nano,self_consistency,n,8,31415,300,0.1567,0.3067,0.2317,12490.0
+gpt-4.1-nano,mcts_tax,iterations,16,13,300,0.23,0.3967,0.3133,10668.2
+gpt-4.1-nano,mcts_tax,iterations,16,42,300,0.23,0.3933,0.3117,10647.8
+gpt-4.1-nano,mcts_tax,iterations,16,1337,300,0.23,0.4,0.315,10672.5
+gpt-4.1-nano,mcts_tax,iterations,16,2025,300,0.23,0.3933,0.3117,10690.7
+gpt-4.1-nano,mcts_tax,iterations,16,31415,300,0.2267,0.39,0.3083,10664.4
+gpt-4.1-nano,mcts_reason,iterations,8,13,300,0.34,0.4833,0.4117,14116.8
+gpt-4.1-nano,mcts_reason,iterations,8,42,300,0.3367,0.4767,0.4067,14111.2
+gpt-4.1-nano,mcts_reason,iterations,8,1337,300,0.3367,0.4833,0.41,14150.7
+gpt-4.1-nano,mcts_reason,iterations,8,2025,300,0.3433,0.4833,0.4133,14144.7
+gpt-4.1-nano,mcts_reason,iterations,8,31415,300,0.34,0.48,0.41,14187.1

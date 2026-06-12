@@ -1,0 +1,123 @@
+\section{Prompts and Schemas}
+\label{app:prompts}
+
+All strategies share a single per-step policy prompt (\S\ref{app:rank}); the
+reasoning-trajectory strategies add two prompts of their own
+(\S\ref{app:reason}); both reward sources share one scoring prompt
+(\S\ref{app:reward}). All calls request \texttt{response\_format
+= json\_object} and are parsed defensively: malformed entries are dropped, and
+any candidate missing from the output receives a floor score of $10^{-3}$ so
+search never crashes on a parse failure. Code longer than 5{,}000 characters is
+truncated with an explicit \texttt{/* \ldots truncated \ldots */} marker.
+
+\subsection{Per-step ranking prompt (all taxonomy strategies)}
+\label{app:rank}
+
+Greedy, self-consistency, best-of-$N$, beam, and $\mctstax$ all call one shared
+step: rank the candidate children of the current taxonomy node. Placeholders are
+in angle brackets.
+
+\begin{lstlisting}
+SYSTEM:
+You are a security expert classifying the vulnerability in a code
+function according to the CWE taxonomy. Classify the WEAKNESS the
+code exhibits, not the fix. You are given the candidate CWE
+categories at one level of the taxonomy; choose among THESE
+candidates only.
+
+USER:
+[Prior reasoning: <rationale carried over from the parent step>]
+
+Function:
+```c
+<code, truncated at 5000 chars>
+```
+
+Candidate CWE categories:
+<one line per child: "- CWE-XXX: <name>. <description>">
+
+Score EVERY candidate listed above by how likely it describes the
+weakness in the function (0.0 = no, 1.0 = yes); scores need not
+sum to 1. You MUST output an entry for every candidate CWE id.
+Return JSON: {"scores": {"CWE-XXX": 0.0, "CWE-YYY": 0.0, ...},
+"rationale": "one sentence"}.
+\end{lstlisting}
+
+Greedy takes the arg-max at temperature $0$; self-consistency and best-of-$N$
+sample the same prompt at temperature $0.7$ with a per-sample cache nonce;
+beam and $\mctstax$ use the full score vector as child priors. The
+\texttt{rationale} is capped at 300 characters and passed down as ``prior
+reasoning'' to the next level.
+
+\subsection{Reasoning-trajectory prompts ($\mctsreas$)}
+\label{app:reason}
+
+$\mctsreas$ searches over reasoning states rather than taxonomy nodes. A move is
+either a brief next reasoning step or a commit to one leaf CWE; the candidate
+list shown to the model is the flat list of tree leaves (id $+$ name).
+
+\begin{lstlisting}
+SYSTEM:
+You are a security expert reasoning step by step about the weakness
+in a code patch, in order to classify it into exactly one CWE.
+Reason about the removed (vulnerable) lines, not the fix.
+
+USER (expansion; k = 3):
+Code patch:
+```c
+<code, truncated at 5000 chars>
+```
+
+Reasoning so far:
+<numbered steps, or "(none yet)">
+
+Candidate CWEs:
+<one line per leaf: "- CWE-XXX: <name>">
+
+Propose 3 DISTINCT next moves toward the answer. Each move is
+either a brief next reasoning step, or a final commit to ONE
+candidate CWE id. Return JSON: {"moves": [{"type": "step",
+"text": "..."} or {"type": "commit", "cwe": "CWE-XXX"}, ...]}.
+
+USER (forced commit; rollouts and final extraction):
+<same code + reasoning-so-far + candidate blocks>
+
+Commit to the single best CWE now. Return JSON {"cwe": "CWE-XXX"}.
+\end{lstlisting}
+
+Reasoning steps are capped at 300 characters and traces at
+\texttt{max\_steps} $= 3$; a commit to an id outside the candidate list falls
+back to the first leaf (and is counted as an error in practice). Expansion runs
+at temperature $0$; rollout commits run at temperature $0.7$ with a
+\texttt{(seed, iteration)} cache nonce.
+
+\subsection{Reward prompt (self-evaluation and external judge)}
+\label{app:reward}
+
+Both reward sources use the \emph{same} prompt; the only difference is the model
+it is sent to --- the policy itself (\texttt{self\_eval}) or the stronger judge
+(\texttt{external\_judge}, Claude-Haiku-4.5). The reward scores a partial or
+complete root-to-node path in $[0,1]$; both are zero-shot, no PRM is trained.
+
+\begin{lstlisting}
+SYSTEM:
+You are auditing a proposed CWE classification of a code function.
+Judge how well the proposed CWE path describes the weakness in the
+code. Classify the weakness, not the fix.
+
+USER:
+Function:
+```c
+<code, truncated at 5000 chars>
+```
+
+Proposed CWE path: CWE-AAA (<name>) -> CWE-BBB (<name>) -> ...
+This path is {PARTIAL (not yet a leaf) | COMPLETE (leaf)}.
+
+Description of the final node CWE-BBB: <description or "n/a">
+
+Return JSON {"score": 0.0-1.0} where score is the probability this
+path correctly classifies the weakness in the function.
+\end{lstlisting}
+
+The score is clamped to $[0,1]$; a parse failure scores $0$.

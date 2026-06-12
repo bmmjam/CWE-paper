@@ -1,0 +1,124 @@
+\section{Analysis}
+\label{sec:analysis}
+
+\subsection{When does search pay off?}
+Synthesizing RQ1--RQ4 yields a simple decision rule for test-time search on this
+structured-output task:
+\begin{enumerate}
+\item \textbf{Search the reasoning, not the taxonomy.} $\mctsreas$ beats $\mctstax$
+on both policies (Table~\ref{tab:m4m5}), and does so even at \emph{half} the
+budget (Figure~\ref{fig:budget}); committing to coarse categories early is the
+single most costly design choice.
+\item \textbf{Spend on search when the policy is weak.} The marginal gain over
+greedy is large for a weak policy and shrinks toward zero as policy strength
+$\polacc$ grows (RQ2); on a strong policy near the task's accuracy ceiling,
+additional search is barely worth its cost.
+\item \textbf{Prefer reward-guided search to sampling.} At matched budget,
+self-consistency---which ignores the reward---captures almost none of the gain that
+reward-guided MCTS does (RQ1).
+\end{enumerate}
+The binding constraints are the \emph{search space} and the \emph{policy}, not the
+search budget or the reward source.
+
+\subsection{Cascade error: why taxonomy search hurts}
+Proposition~\ref{prop:cascade} predicts that level-by-level commitment compounds
+early mistakes. The per-example breakdown (weak policy, $5$ seeds $\times$
+$n{=}300$, Figure~\ref{fig:cascade}) confirms it: \textbf{$\mctstax$ commits to a
+wrong category --- unrecoverable by construction --- on $60.5\%$ of examples,
+versus $51.9\%$ for $\mctsreas$} (greedy: $71.3\%$), and on the examples where
+$\mctstax$ chose the wrong category, $\mctsreas$ recovered the correct one
+$25.7\%$ of the time. Notably, the within-category error rate (right category,
+wrong leaf) is nearly constant across strategies ($14$--$17\%$): all of the
+reasoning-search advantage comes from avoiding the early, coarse commitment, not
+from finer leaf discrimination. Deferring commitment is thus the mechanism behind
+reasoning search's advantage.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\linewidth]{figures/cascade.pdf}
+\caption{First-error level (GPT-4.1-nano, $5$ seeds $\times$ $300$ examples;
+greedy is deterministic, $1$ seed). Strategies differ almost entirely in how
+often they commit to a wrong coarse category; the right-category-wrong-leaf band
+is nearly constant.}
+\label{fig:cascade}
+\end{figure}
+
+\subsection{The scaffold, not the search}
+The $\mctsreas$ budget sweep (Figure~\ref{fig:budget}) adds a sharper reading of
+RQ4: accuracy at $I{=}2$ --- where the ``tree'' has barely expanded beyond its
+root and the reward has had no opportunity to steer --- already matches $I{=}8$.
+Most of the benefit of ``MCTS over reasoning'' is therefore attributable to its
+\emph{scaffold} (generate free-form reasoning about the patch, then commit to a
+leaf directly, skipping level-by-level commitment), not to the tree-search
+machinery on top. This refines the headline: the search-space design dominates
+both the budget \emph{and the amount of search itself}. By contrast, $\mctstax$
+does benefit from iterations at small $I$ (Figure~\ref{fig:budget}), but
+saturates by $I{\approx}8$ at a level far below the reasoning scaffold.
+
+\subsection{Reward fidelity is not the bottleneck}
+Replacing self-evaluation with a stronger external judge (Claude-Haiku-4.5
+judging GPT-4.1-nano) leaves taxonomy search exactly where it was ($22.8$ vs.\
+$22.9$ leaf) and lifts reasoning search by $+1.5$ points at $+27\%$ tokens ---
+less than the same tokens buy via the search-space choice itself (RQ3). The
+asymmetry is informative: in $\mctstax$ the reward only re-ranks siblings
+\emph{after} the category commitment that drives most errors
+(Figure~\ref{fig:cascade}), so no reward source can rescue it; in $\mctsreas$
+the reward selects among complete leaf commitments, where a better judge has
+something to act on --- yet the effect is marginal because the policy's own
+self-evaluation already separates its candidate commitments about as well.
+
+The logged rollout rewards quantify this directly. Treating the reward of each
+MCTS rollout as a predictor of whether that rollout's leaf is correct: on
+taxonomy rollouts the judge is \emph{measurably better calibrated} than
+self-evaluation (AUROC $0.76$ vs.\ $0.71$, $14$--$24$k pooled rollouts) --- and
+final accuracy still does not move, confirming that reward quality is not what
+limits $\mctstax$. On reasoning rollouts the judge is \emph{no} better
+calibrated ($0.62$ vs.\ $0.64$), consistent with its marginal accuracy effect
+there. In both cases the reward ranks candidates far above chance, so the
+search is reward-guided in a meaningful sense; it is the set of candidates the
+search space exposes, not their ranking, that binds.
+
+\subsection{Latency and practical cost}
+Token budget understates MCTS's practical cost: self-consistency parallelizes
+trivially across its independent samples, whereas MCTS is sequential (each
+iteration depends on the previous tree statistics). The flat $\mctsreas$
+iteration curve softens this in practice --- at $I{=}2$ its sequential depth is
+small --- but the asymmetry matters wherever more search \emph{is} needed.
+\TODO{Pareto frontier with wall-clock latency (P50/P95) on the x-axis.}
+
+\subsection{Failure modes}
+The cascade breakdown above is the quantitative core of the failure analysis:
+taxonomy search fails predominantly by early-level commitment; reasoning search's
+residual errors are split between wrong-category commits and within-category
+(sibling-CWE) confusions, the latter reflecting genuine taxonomy ambiguity and
+label noise (\S\ref{sec:limitations}).
+\TODO{Manual labeling of 100 errors into pillar-miss / sibling-miss /
+reward-misranking / ambiguous-ground-truth, weak vs.\ strong policy.}
+
+\subsection{Limitations}
+\label{sec:limitations}
+\begin{itemize}
+\item \textbf{Label noise and ambiguity.} BigVul CWE labels are known to be noisy,
+and many functions admit several valid CWEs while the gold label is single; this
+caps achievable accuracy independently of method (greedy category accuracy plateaus
+near $0.40$ even for a premium model on raw functions).
+\item \textbf{Pilot scale.} Headline comparisons use $n{=}300$ ($5$ seeds) for the
+weak policy and $n{=}130$--$150$ ($3$ seeds) for DeepSeek/Haiku, all drawn from
+one fixed example file (the smaller sets are prefixes of the larger), with a few
+per-cell API failures dropped; the final protocol fixes a common $n{\approx}2000$
+test set with $5$ seeds and paired McNemar throughout.
+\item \textbf{Saturation of $\mctstax$.} We compare $\mctstax$ up to $I{=}16$
+($10.7$k tokens); deeper probes ($I$ up to $128$, full-depth tree, $n{=}8$)
+showed predictions frozen well before $I{=}16$, and $\mctsreas$ at \emph{half}
+$\mctstax$'s budget already dominates
+(Figure~\ref{fig:budget}), so larger taxonomy-search budgets are unlikely to
+change the conclusion.
+\item \textbf{Reward is zero-shot only.} A trained process reward model could shift
+the RQ3 conclusion; we leave it to future work.
+\item \textbf{Pretraining exposure.} We cannot fully rule out that LLMs saw test
+CVEs during pretraining; a post-cutoff slice is a planned robustness check.
+\item \textbf{Language coverage.} Data is C/C++-dominated.
+\end{itemize}
+
+\TODO{Robustness: confirm the reasoning$>$taxonomy result on (i) a temporal split
+and (ii) pillar-only granularity.}

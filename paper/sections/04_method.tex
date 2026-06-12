@@ -1,0 +1,94 @@
+\section{Methods: A Ladder of Test-Time Search}
+\label{sec:method}
+
+All strategies share one policy LLM $\policy$, one per-step prompt template
+(contrastive: candidate CWE descriptions are shown side by side), and one
+structured-output schema. The \emph{only} thing that varies across strategies is
+how they search. This is what makes the compute-matched comparison (\S\ref{sec:experiments})
+a clean measurement of search structure rather than prompt engineering.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{l l l l}
+\toprule
+ & Strategy & Searches over & Knob \\
+\midrule
+M0a & Flat & --- (one call, all leaves) & --- \\
+M0b & Greedy & --- (argmax per level) & --- \\
+M1 & Self-consistency & i.i.d.\ samples, majority & $N$ \\
+M2 & Best-of-$N$ & i.i.d.\ samples, reward-max & $N$ \\
+M3 & Beam & taxonomy, width-limited & $w$ \\
+M4 & $\mctstax$ & taxonomy, reward-guided & $I$ \\
+M5 & $\mctsreas$ & reasoning steps, reward-guided & $I$ \\
+\bottomrule
+\end{tabular}
+\caption{The ladder of strategies, ordered by increasing search structure. All
+share one policy, prompt, and output schema; each strategy's knob is set by the
+compute-matched protocol (\S\ref{sec:experiments}).}
+\label{tab:ladder}
+\end{table}
+
+\subsection{No-search baselines}
+\textbf{Flat (M0a):} a single call lists all leaf candidates and the model picks
+one. \textbf{Greedy-hierarchical (M0b):} one call per level, taking the argmax
+child; defines $\Acc_{\text{Greedy}}$ and the policy-strength proxy $\polacc$.
+
+\subsection{Sampling strategies}
+\textbf{Self-Consistency (M1):} sample $N$ independent paths at temperature
+$T>0$, return the majority leaf. \textbf{Best-of-$N$ (M2):} sample $N$ paths,
+return the one maximizing the reward $r$ (\S\ref{sec:reward}). M1 isolates the
+value of sampling alone; M2 adds the value of a reward signal.
+
+\subsection{Structured search}
+\textbf{Beam (M3):} maintain the top-$w$ partial paths per level under $r$;
+deterministic given $\policy$. \textbf{$\mctstax$ (M4):} MCTS over the taxonomy.
+
+\begin{algorithm}[t]
+\caption{$\mctstax$: MCTS over the CWE taxonomy}
+\label{alg:mcts}
+\begin{algorithmic}[1]
+\Require code $c$, taxonomy $\mathcal{T}$, policy $\policy$, reward $r$, budget $I$ iterations
+\State root state $s_0 \gets (r)$ \Comment{partial path}
+\For{$i = 1, \dots, I$}
+  \State \textbf{Select}: descend by $Q(s,a) + c_{\text{exp}} \, P(a)\sqrt{N(s)+1}/(1+N(s,a))$ \Comment{PUCT; $P$ from policy scores}
+  \State \textbf{Expand}: $\policy$ scores the children of the selected node; scores become priors $P$
+  \State \textbf{Evaluate}: $r(s')$ scores the (partial/complete) path via self-eval or judge
+  \State \textbf{Backprop}: update $Q,N$ up the search tree
+\EndFor
+\State \Return path through most-visited children (robust child)
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{$\mctsreas$ (M5):} the same selection/backup core, but search-tree nodes
+are \emph{reasoning states} (a sequence of short free-form reasoning steps about
+the patch), not CWE nodes. Each move either appends one reasoning step or
+\emph{commits} to a single leaf CWE from the flat leaf list (prompts in
+Appendix~\ref{app:prompts}); rollouts force a commit and score the resulting
+root-to-leaf path, and the committed leaf is deterministically mapped to a
+taxonomy path. Crucially, M5 never commits level-by-level: the coarse category is
+implied by the final leaf, not chosen first. M4 vs.\ M5 is our test of whether
+search over the output structure or over reasoning is more robust to early-level
+compounding (Proposition~\ref{prop:cascade}).
+
+\subsection{Reward signal}
+\label{sec:reward}
+We deliberately use \emph{only} zero-shot reward sources, with no trained process
+reward model (PRM), to keep the study GPU-free and reproducible:
+\begin{itemize}
+\item \textbf{Self-eval:} the policy $\policy$ scores its own (partial) path in
+$[0,1]$.
+\item \textbf{External judge:} a separate, typically stronger model scores the
+path given $c$ and candidate CWE descriptions. We record the pair
+$(\policy, \text{judge})$.
+\end{itemize}
+Comparing self-eval vs.\ judge directly probes whether the bottleneck is the
+policy or the reward (RQ3/H3). A trained PRM is left to future work
+(\S\ref{sec:conclusion}).
+
+\subsection{Structured outputs}
+Each policy call returns JSON --- per-candidate scores plus a one-sentence
+rationale that is carried into the next level's prompt --- parsed defensively
+with a small floor score for missing candidates, so malformed outputs never
+crash the search (Appendix~\ref{app:prompts}). Conformal calibration of
+path-level prediction sets from the score vectors is part of the final protocol.

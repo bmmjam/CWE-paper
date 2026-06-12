@@ -1,0 +1,10 @@
+model,strategy,knobs,n,leaf_acc,pillar_acc,hier_f1,mean_tokens,total_tokens,elapsed_s
+gpt-4.1-nano,greedy,{},25,0.08,0.16,0.12,1331.0,33276,46.6
+deepseek/deepseek-chat-v3.1,greedy,{},25,0.16,0.24,0.2,1317.4,32934,217.6
+anthropic/claude-haiku-4.5,greedy,{},25,0.12,0.12,0.12,1817.7,45443,109.0
+gpt-4.1-nano,self_consistency,"{""n"": 4, ""temperature"": 0.7}",25,0.08,0.16,0.12,5595.4,139884,86.3
+deepseek/deepseek-chat-v3.1,self_consistency,"{""n"": 4, ""temperature"": 0.7}",25,0.04,0.2,0.12,6474.9,161872,518.6
+anthropic/claude-haiku-4.5,self_consistency,"{""n"": 4, ""temperature"": 0.7}",25,0.12,0.12,0.12,7271.2,181780,117.3
+gpt-4.1-nano,mcts_tax,"{""iterations"": 6, ""c_exp"": 1.0, ""reward_source"": ""self_eval"", ""rollout_temp"": 0.7}",25,0.0,0.2,0.1,5462.3,136557,140.7
+deepseek/deepseek-chat-v3.1,mcts_tax,"{""iterations"": 6, ""c_exp"": 1.0, ""reward_source"": ""self_eval"", ""rollout_temp"": 0.7}",25,0.16,0.32,0.24,6327.7,158193,896.8
+anthropic/claude-haiku-4.5,mcts_tax,"{""iterations"": 6, ""c_exp"": 1.0, ""reward_source"": ""self_eval"", ""rollout_temp"": 0.7}",25,0.12,0.12,0.12,11720.4,293009,920.6

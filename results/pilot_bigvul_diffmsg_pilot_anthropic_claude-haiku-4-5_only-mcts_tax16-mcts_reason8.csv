@@ -1,0 +1,7 @@
+model,strategy,knob,knob_val,seed,n,leaf_acc,pillar_acc,hier_f1,mean_tokens
+anthropic/claude-haiku-4.5,mcts_tax,iterations,16,13,150,0.26,0.4467,0.3533,18914.5
+anthropic/claude-haiku-4.5,mcts_tax,iterations,16,42,130,0.2769,0.4385,0.3577,19098.7
+anthropic/claude-haiku-4.5,mcts_tax,iterations,16,1337,150,0.26,0.4467,0.3533,18914.3
+anthropic/claude-haiku-4.5,mcts_reason,iterations,8,13,150,0.2867,0.4267,0.3567,24404.7
+anthropic/claude-haiku-4.5,mcts_reason,iterations,8,42,150,0.2933,0.4333,0.3633,24510.4
+anthropic/claude-haiku-4.5,mcts_reason,iterations,8,1337,150,0.2733,0.4267,0.35,24595.4

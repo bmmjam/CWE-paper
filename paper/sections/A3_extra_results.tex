@@ -1,0 +1,61 @@
+\section{Additional Results}
+\label{app:extra}
+
+\subsection{Full pilot budget grid (weak policy)}
+Table~\ref{tab:a2} reports every (strategy, knob) point behind
+Figure~\ref{fig:budget}: GPT-4.1-nano, $n{=}300$, mean $\pm$ std over $5$ seeds
+(greedy is deterministic and run once).
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{l r r cc}
+\toprule
+Strategy & Knob & Tokens/ex & Leaf (\%) & Category (\%) \\
+\midrule
+Greedy           & ---      & $1{,}561$  & $14.7$            & $28.7$ \\
+Self-consistency & $N{=}4$  & $6{,}246$  & $16.6 \pm 0.4$    & $31.8 \pm 1.0$ \\
+Self-consistency & $N{=}8$  & $12{,}493$ & $16.5 \pm 1.1$    & $31.5 \pm 1.0$ \\
+$\mctstax$       & $I{=}8$  & $6{,}695$  & $22.3 \pm 0.1$    & $40.2 \pm 0.4$ \\
+$\mctstax$       & $I{=}16$ & $10{,}669$ & $22.9 \pm 0.1$    & $39.5 \pm 0.4$ \\
+$\mctsreas$      & $I{=}2$  & $5{,}257$  & $\mathbf{34.8 \pm 0.4}$ & $\mathbf{50.4 \pm 0.4}$ \\
+$\mctsreas$      & $I{=}4$  & $8{,}546$  & $34.5 \pm 0.6$    & $49.1 \pm 0.9$ \\
+$\mctsreas$      & $I{=}6$  & $11{,}379$ & $33.8 \pm 0.4$    & $48.7 \pm 0.4$ \\
+$\mctsreas$      & $I{=}8$  & $14{,}142$ & $33.9 \pm 0.3$    & $48.1 \pm 0.3$ \\
+\bottomrule
+\end{tabular}
+\caption{Pilot budget grid (GPT-4.1-nano, BigVul diff$+$msg, $n{=}300$, $5$
+seeds). Tokens/ex doubles as the knob$\to$tokens calibration used to set
+compute-matched comparison points.}
+\label{tab:a2}
+\end{table}
+
+Across-seed variance is small throughout (std $\le 1.1$ points), so the pilot's
+seed budget is adequate for the gaps being measured.
+
+\subsection{Pairwise significance (weak policy)}
+Paired McNemar on leaf accuracy, seed 13, $n{=}300$ (consistent across seeds):
+$\mctsreas(I{=}8)$ vs.\ $\mctstax(I{=}16)$: $57/24$ discordant pairs,
+$p = 3.2\times10^{-4}$;
+$\mctsreas(I{=}2)$ vs.\ $\mctstax(I{=}16)$ (at \emph{half} the budget): $59/23$,
+$p = 8.7\times10^{-5}$;
+$\mctsreas(I{=}2)$ vs.\ greedy: $80/19$, $p = 4.4\times10^{-10}$;
+$\mctstax(I{=}16)$ vs.\ greedy: $p = 8\times10^{-6}$;
+$\mctstax(I{=}16)$ vs.\ self-consistency ($N{=}8$): $p = 2\times10^{-3}$.
+The full strategy $\times$ strategy matrix with Bonferroni adjustment is part of
+the final protocol.
+
+\subsection{Taxonomy-search saturation probe}
+On the full-depth MITRE tree (716 leaves), $\mctstax$ at $I \in \{16, 64, 128\}$
+returned byte-identical predictions on a small dev probe ($n{=}8$; $13$k, $38$k,
+and $71$k tokens/example respectively): once the level-wise priors lock in, more
+iterations re-visit the same branch. This motivated capping $\mctstax$ at
+$I{=}16$ in the pilot grid.
+
+\subsection{Planned ablations (final protocol)}
+The following are pre-registered but not yet run at pilot scale:
+exploration-constant sensitivity ($c_{\text{exp}} \in \{0.5, 1.0, 1.41\}$);
+aggregation rule (majority vs.\ reward-weighted vs.\ robust-child);
+tree-granularity breakdown (coarse vs.\ full-depth); per-language stratification
+(the pilot is C/C++ only); wall-clock latency tables (P50/P95) separating
+parallelizable from sequential token spend.

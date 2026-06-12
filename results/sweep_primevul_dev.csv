@@ -1,0 +1,15 @@
+model,strategy,knob,knob_val,n_examples,leaf_acc,pillar_acc,hier_f1,mean_tokens,total_tokens,elapsed_s
+gpt-4.1-nano,greedy,-,0,20,0.1,0.15,0.125,1293.0,25860,341.9
+gpt-4.1-nano,self_consistency,n,4,20,0.1,0.15,0.125,5017.2,100344,227.0
+gpt-4.1-nano,self_consistency,n,8,20,0.1,0.2,0.15,10337.4,206747,326.8
+gpt-4.1-nano,self_consistency,n,16,20,0.1,0.2,0.15,20958.8,419176,792.2
+gpt-4.1-nano,mcts_tax,iterations,6,20,0.05,0.2,0.125,5421.4,108429,190.4
+gpt-4.1-nano,mcts_tax,iterations,16,20,0.05,0.2,0.125,10121.2,202425,1.4
+gpt-4.1-nano,mcts_tax,iterations,32,20,0.05,0.2,0.125,17787.2,355743,2.5
+gpt-4.1-nano,mcts_tax,iterations,64,20,0.05,0.2,0.125,33120.3,662406,0.2
+anthropic/claude-haiku-4.5,greedy,-,0,20,0.15,0.15,0.15,1856.2,37124,117.3
+anthropic/claude-haiku-4.5,self_consistency,n,4,20,0.15,0.15,0.15,7448.1,148963,542.8
+anthropic/claude-haiku-4.5,self_consistency,n,8,20,0.15,0.15,0.15,14893.5,297869,432.1
+anthropic/claude-haiku-4.5,self_consistency,n,16,20,0.15,0.15,0.15,29807.2,596145,833.3
+anthropic/claude-haiku-4.5,mcts_tax,iterations,6,20,0.15,0.15,0.15,11962.2,239244,810.2
+anthropic/claude-haiku-4.5,mcts_tax,iterations,16,20,0.15,0.15,0.15,21744.2,434883,578.3

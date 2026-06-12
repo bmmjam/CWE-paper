@@ -1,0 +1,75 @@
+# --- Secrets ---
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --- Data, results, logs ---
+# Tracked: data/*.jsonl + CWE trees (+sha256), results/*.csv + results/pilot_ex/
+# (everything needed to reproduce the paper's numbers and figures).
+# Ignored: raw parquet snapshots (re-fetched by scripts/build_*.py) and caches.
+data/raw/
+data/processed/
+data/cache/
+data/*.parquet
+data/cwec_latest.xml.zip
+results/runs/
+logs/
+wandb/
+mlruns/
+.cache/
+*.pkl
+*.pickle
+*.faiss
+*.index
+
+# --- Models ---
+checkpoints/
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# --- LaTeX (delegated to paper/.gitignore for that subtree) ---

@@ -1,0 +1,98 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Layout ---
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{titling}
+
+% --- Math & symbols ---
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% --- Graphics & tables ---
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{subcaption}
+
+% --- Algorithms ---
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% --- Citations ---
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\usepackage{url}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!50!black,
+    citecolor=green!50!black,
+    urlcolor=red!50!black,
+}
+
+% --- Code listings ---
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+}
+
+% --- Theorem environments ---
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- Custom macros ---
+\newcommand{\budget}{\mathcal{B}}                 % token compute budget
+\newcommand{\Acc}{\mathrm{Acc}}                    % accuracy
+\newcommand{\policy}{\pi}                           % policy LLM
+\newcommand{\polacc}{\alpha(\policy)}              % per-level (pillar) accuracy of policy
+\newcommand{\gain}{\Delta}                          % marginal search gain
+\newcommand{\mctstax}{\textsc{MCTS-Tax}}           % MCTS over CWE taxonomy
+\newcommand{\mctsreas}{\textsc{MCTS-Reason}}       % MCTS over reasoning trajectory
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+
+% --- Title ---
+\title{When Does Test-Time Search Help LLMs Classify Vulnerabilities?\\
+A Compute-Matched Study of MCTS over Taxonomy and Reasoning}
+
+\author{%
+  Anonymous Authors%
+  % Replace with real authors after de-anonymization phase.
+}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+\input{sections/00_abstract}
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_problem}
+\input{sections/04_method}
+\input{sections/05_experiments}
+\input{sections/06_analysis}
+\input{sections/07_conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/A1_dataset_details}
+\input{sections/A2_prompts}
+\input{sections/A3_extra_results}
+
+\end{document}

@@ -1,0 +1,69 @@
+\section{Problem Formulation}
+\label{sec:problem}
+
+\paragraph{Taxonomy and labels.}
+Let $\mathcal{T}=(V, E)$ be the CWE taxonomy: a directed tree (with a small number
+of cross-edges resolved to a primary parent) rooted at $r$, where each node
+$v \in V$ has a textual description $\delta(v)$. A labeled example is a pair
+$(c, p)$ where $c$ is a code fragment and $p = (v_0, v_1, \dots, v_k)$ is a
+root-to-leaf path with $v_0=r$; write $\mathrm{leaf}(p) = v_k$.
+
+\paragraph{Hierarchical classification.}
+A predictor $f$ maps a code fragment $c$ to a path $\hat p$. We report leaf
+exact-match accuracy, path accuracy@$k$, pillar (level-0) accuracy, hierarchical
+$F_1$ on path edges \citep{kosmopoulos2015evaluation}, and Wu--Palmer similarity
+between $\hat p$ and $p$.
+
+\paragraph{Policy and test-time strategies.}
+Fix a base \emph{policy} LLM $\policy$ and a per-step prompt template. A
+\emph{test-time strategy} $X$ is a procedure that, given $c$, issues one or more
+calls to $\policy$ (optionally guided by a reward function $r$) and returns a
+path. We study the family
+\[
+X \in \{\text{Flat},\ \text{Greedy},\ \text{SelfConsistency},\ \text{BestOf}N,\
+\text{Beam},\ \mctstax,\ \mctsreas\}.
+\]
+Each non-trivial strategy has a knob (e.g.\ $N$, beam width $w$, MCTS iterations
+$I$) controlling how much it searches.
+
+\paragraph{Compute budget.}
+Let $\mathrm{tok}_X(c)$ be the total tokens (input$+$output) consumed by strategy
+$X$ on $c$, and $\budget$ a target per-example budget. We say two strategies are
+\emph{compute-matched at $\budget$} if their expected token spend equals $\budget$.
+The central object of study is the budget-conditioned accuracy
+\[
+\Acc_X(\budget) \;=\; \mathbb{E}_{c}\big[\,\mathbf{1}[\hat p_X(c;\budget) = p(c)]\,\big],
+\]
+where $X$'s knob is set so that $\mathbb{E}_c[\mathrm{tok}_X(c)] = \budget$.
+
+\paragraph{Policy strength and marginal search gain.}
+Let $\polacc$ denote the pillar (level-0) accuracy of greedy decoding under
+policy $\policy$; this is our scalar proxy for policy strength. The
+\emph{marginal search gain} of a strategy at budget $\budget$ is
+\[
+\gain_X(\policy, \budget) \;=\; \Acc_X(\budget) - \Acc_{\text{Greedy}}.
+\]
+
+\begin{assumption}[Description availability]
+\label{ass:descriptions}
+The textual description $\delta(v)$ is available for every node $v \in V$ at
+inference time. This reflects the public MITRE CWE taxonomy and lets every
+strategy condition on candidate descriptions without taxonomy-specific training.
+\end{assumption}
+
+% --- The mechanism by which search can help OR hurt ---
+\begin{proposition}[Cascade compounding]
+\label{prop:cascade}
+Suppose hierarchical decoding makes an independent error with probability
+$1-\alpha$ at each of $k$ levels. Then path accuracy is at most $\alpha^k$, so the
+\emph{headroom} a search strategy can recover, $1-\alpha^k$, is largest when
+$\alpha$ is small. A reward-guided search converts this headroom into accuracy only
+to the extent that its reward can identify a better branch than the greedy choice;
+we find empirically (\S\ref{sec:results}) that this payoff is largest for weak
+policies and shrinks as $\alpha$ approaches the task's accuracy ceiling.
+\end{proposition}
+
+Proposition~\ref{prop:cascade} is the informal mechanism behind hypotheses
+H2 and H4 (\S\ref{sec:experiments}): search interacts with policy strength, and
+taxonomy search (which commits level-by-level) is more exposed to early-level
+compounding than reasoning-trajectory search.

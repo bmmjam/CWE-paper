@@ -1,0 +1,3 @@
+model,strategy,knob,knob_val,seed,n,leaf_acc,pillar_acc,hier_f1,mean_tokens
+google/gemini-2.5-flash-lite,greedy,-,0,13,150,0.1867,0.28,0.2333,2066.0
+google/gemini-2.5-flash-lite,self_consistency,n,8,13,150,0.2,0.3067,0.2533,16472.0
