@@ -49,9 +49,12 @@ policy-strength axis (RQ2) unreadable. For the pilot we therefore regroup the
 22 dataset CWEs into a 2-level tree with 7 code-recognizable super-categories
 (spatial memory, temporal memory / lifetime, resource exhaustion, numeric,
 injection / input handling, control-flow, access control / info exposure /
-misc); leaves keep their MITRE names and descriptions. The tree is released
-with SHA-256 \texttt{f3013c19\ldots{}9c79aa}. The full-depth tree is used by the
-final protocol (\emph{planned}).
+misc); leaves keep their MITRE names and descriptions. All $26$ leaves are
+members of CWE View-1003, the simplified-mapping view that NVD uses to label
+published CVEs, so this label space is a subset of the official operational
+vocabulary rather than an ad-hoc simplification. The tree is released with
+SHA-256 \texttt{f3013c19\ldots{}9c79aa}. The full-depth tree is used only for
+the granularity boundary-condition probe (\S\ref{sec:granularity}).
 
 \subsection{Multi-source pooling and deduplication (planned)}
 The final protocol pools PrimeVul \citep{ding2024primevul}, DiverseVul

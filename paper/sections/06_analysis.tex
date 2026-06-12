@@ -122,8 +122,28 @@ change the conclusion.
 the RQ3 conclusion; we leave it to future work.
 \item \textbf{Pretraining exposure.} We cannot fully rule out that LLMs saw test
 CVEs during pretraining; a post-cutoff slice is a planned robustness check.
+\item \textbf{Granularity coverage.} Findings are established on a 26-CWE
+subset of View-1003 (the labels occurring in the data) plus a floor probe at
+View-1000; the intermediate regime --- the full 130-CWE View-1003 as used by
+NVD --- is the natural target for the final protocol.
 \item \textbf{Language coverage.} Data is C/C++-dominated.
 \end{itemize}
 
-\TODO{Robustness: confirm the reasoning$>$taxonomy result on (i) a temporal split
-and (ii) pillar-only granularity.}
+\subsection{Tree granularity as a boundary condition}
+\label{sec:granularity}
+Does the picture survive at the full Research-Concepts granularity (View-1000,
+$716$ leaves)? A probe ($n{=}50$) says the question itself dissolves there: the
+\emph{strongest} policies drop to near-floor --- Sonnet greedy reaches $20\%$
+pillar accuracy (10 pillars) and its predicted path passes through the gold node
+on only $6\%$ of examples; $\mctstax$ ($I{=}16$), now spending $30$k
+tokens/example, lifts this to $28\%$ / $14\%$. Search still moves the needle
+(gold-on-path doubles), but from a base so low that no test-time budget makes
+the output usable. This is the boundary condition our policy-strength story
+predicts: search converts headroom into accuracy only when the policy is above
+the floor of the label space (RQ2), and at research granularity it is not ---
+which is also why MITRE directs practical CVE mapping to the smaller View-1003
+(\S\ref{sec:problem}). Test-time search is a lever \emph{within} the
+operational regime, not a way to buy back a label space the policy cannot see.
+
+\TODO{Robustness: confirm the reasoning$>$taxonomy result on a temporal split
+(BigVul 2006--16 vs.\ 2017--19).}

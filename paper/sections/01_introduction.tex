@@ -39,10 +39,12 @@ compute did not help; searching a different space did.}
 
 % --- Problem framing ---
 We study this question on \emph{hierarchical vulnerability classification}: given
-a code fragment, predict a root-to-leaf path in the CWE taxonomy. This task is a
-good testbed because (i) it has a real, structured output space with a natural
-search tree; (ii) errors compound across levels, so search has a plausible
-mechanism to help \emph{or} to hurt; and (iii) public, CWE-labeled datasets exist.
+a code fragment, predict a root-to-leaf path in the CWE taxonomy, at the
+operational granularity used to label real CVEs (\S\ref{sec:problem}). This task
+is a good testbed because (i) it has a real, structured output space with a
+natural search tree; (ii) errors compound across levels, so search has a
+plausible mechanism to help \emph{or} to hurt; and (iii) public, CWE-labeled
+datasets exist.
 
 % --- The confound we remove ---
 \paragraph{The compute confound.}

@@ -8,6 +8,19 @@ $v \in V$ has a textual description $\delta(v)$. A labeled example is a pair
 $(c, p)$ where $c$ is a code fragment and $p = (v_0, v_1, \dots, v_k)$ is a
 root-to-leaf path with $v_0=r$; write $\mathrm{leaf}(p) = v_k$.
 
+\paragraph{Granularity regime.}
+CWE ships several views of different granularity. The full Research-Concepts
+view (View-1000, $716$ leaves) is designed for weakness research; MITRE's own
+mapping guidance directs CVE labeling to the much smaller View-1003
+(``Weaknesses for Simplified Mapping of Published Vulnerabilities'', $130$
+CWEs), which is what NVD uses in practice. We study the \emph{operational}
+regime: our label space (7 code-aligned categories over 26 CWE leaves,
+Appendix~\ref{app:data}) is a subset of View-1003 covering the labels that
+occur in the data. The full-depth view serves as a boundary condition: we show
+in \S\ref{sec:analysis} that at View-1000 granularity every current policy ---
+including the premium one --- sits at the signal floor, where the question
+``does search help'' degenerates.
+
 \paragraph{Hierarchical classification.}
 A predictor $f$ maps a code fragment $c$ to a path $\hat p$. We report leaf
 exact-match accuracy, path accuracy@$k$, pillar (level-0) accuracy, hierarchical
