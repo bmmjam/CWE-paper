@@ -4,8 +4,19 @@
 All strategies share one policy LLM $\policy$, one per-step prompt template
 (contrastive: candidate CWE descriptions are shown side by side), and one
 structured-output schema. The \emph{only} thing that varies across strategies is
-how they search. This is what makes the compute-matched comparison (\S\ref{sec:experiments})
-a clean measurement of search structure rather than prompt engineering.
+how they search (Figure~\ref{fig:arch}). This is what makes the compute-matched
+comparison (\S\ref{sec:experiments}) a clean measurement of search structure
+rather than prompt engineering.
+
+\begin{figure}[t]
+\centering
+\input{figures/fig_architecture}
+\caption{Shared architecture. Every strategy drives the same frozen policy LLM
+through the same three operations and differs only in the search controller it
+plugs in; the reward signal (self-evaluation or external judge) is used only by
+the reward-guided strategies (best-of-$N$, beam, MCTS).}
+\label{fig:arch}
+\end{figure}
 
 \begin{table}[t]
 \centering
@@ -70,6 +81,17 @@ taxonomy path. Crucially, M5 never commits level-by-level: the coarse category i
 implied by the final leaf, not chosen first. M4 vs.\ M5 is our test of whether
 search over the output structure or over reasoning is more robust to early-level
 compounding (Proposition~\ref{prop:cascade}).
+
+\begin{figure}[t]
+\centering
+\input{figures/fig_search_spaces}
+\caption{The two MCTS search spaces. $\mctstax$ (left) walks the label tree and
+must pick a coarse category before it has reasoned about the patch; a wrong
+first move makes the gold leaf unreachable. $\mctsreas$ (right) searches over
+short free-form reasoning steps and commits to a leaf directly, so the category
+is implied by the final choice rather than locked in first.}
+\label{fig:spaces}
+\end{figure}
 
 \subsection{Reward signal}
 \label{sec:reward}

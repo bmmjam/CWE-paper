@@ -6,75 +6,59 @@
   },
   font=\footnotesize,
   >=Stealth,
-  box/.style={
-    rounded corners=2pt,
-    draw=black!60,
-    line width=0.45pt,
-    align=center,
-    inner sep=3.5pt,
-    fill=black!6
-  },
-  smallbox/.style={
-    rounded corners=1.5pt,
-    draw=black!60,
-    line width=0.35pt,
-    align=center,
-    inner sep=2pt,
-    fill=white
-  },
-  arrow/.style={->, line width=0.45pt},
-  reward/.style={
-    rounded corners=2pt,
-    draw=rewardblue,
-    line width=0.55pt,
-    align=center,
-    inner sep=3pt,
-    fill=rewardblue!10
-  }
+  box/.style={rounded corners=2pt, draw=black!60, line width=0.45pt,
+              align=center, inner sep=3.5pt, fill=black!6},
+  sub/.style={rounded corners=1.5pt, draw=black!60, line width=0.35pt,
+              align=center, inner sep=2.5pt, fill=white},
+  rew/.style={rounded corners=2pt, draw=rewardblue, line width=0.55pt,
+              align=center, inner sep=3pt, fill=rewardblue!10},
+  arrow/.style={->, line width=0.45pt}
 ]
 
-\node[box, text width=1.25cm, minimum height=0.78cm] (input) at (0,0)
-  {code patch\\(diff + msg)};
+% input
+\node[box] (input) at (0,0) {code patch\\(diff $+$ msg)};
 
-\node[box, text width=2.05cm, minimum height=1.75cm] (policy) at (2.35,0)
-  {};
-\node[align=center] at ([yshift=0.57cm]policy.center) {policy LLM\\(frozen)};
-\node[smallbox, text width=1.55cm] (rank) at ([yshift=0.08cm]policy.center)
-  {rank children};
-\node[smallbox, text width=1.55cm, below=1pt of rank] (prop)
-  {propose step};
-\node[smallbox, text width=1.55cm, below=1pt of prop] (commit)
-  {commit leaf};
+% policy container with three operations
+\node[sub] (rank) at (3.3,0.55) {rank children};
+\node[sub] (prop) at (3.3,0.0)  {propose step};
+\node[sub] (comm) at (3.3,-0.55) {commit leaf};
+\node[box, fit={(rank) (prop) (comm)}, inner sep=5pt,
+      label={[font=\footnotesize]above:policy LLM (frozen)}] (policy) {};
+\node[sub] at (3.3,0.55) {rank children};
+\node[sub] at (3.3,0.0)  {propose step};
+\node[sub] at (3.3,-0.55) {commit leaf};
 
-\node[box, text width=1.45cm, minimum height=0.76cm] (controller) at (4.85,0)
-  {search\\controller};
+% controller
+\node[box, minimum height=1.1cm] (ctrl) at (6.4,0) {search\\controller};
 
-\node[anchor=west, align=left, inner sep=1pt] (ladder) at (5.76,0.02) {%
+% strategy ladder
+\node[anchor=west, align=left, inner sep=2pt] (ladder) at (7.6,0) {%
   Greedy\\
-  Self-cons. (N)\\
-  Best-of-N\\
-  Beam (w)\\
-  {\color{mctsred}MCTS-Tax (I)}\\
-  {\color{mctsgreen}MCTS-Reason (I)}%
+  Self-consistency ($N$)\\
+  Best-of-$N$\\
+  Beam ($w$)\\
+  {\color{mctsred}\textsc{MCTS-Tax} ($I$)}\\
+  {\color{mctsgreen}\textsc{MCTS-Reason} ($I$)}%
 };
-\draw[black!35, line width=0.35pt] ([xshift=-0.12cm,yshift=0.43cm]ladder.west) --
-  ([xshift=-0.12cm,yshift=-0.52cm]ladder.west);
+\draw[black!35, line width=0.4pt]
+  ([xshift=1pt]ladder.north west) -- ([xshift=1pt]ladder.south west);
 
-\node[reward, text width=1.55cm, minimum height=0.70cm] (reward) at (4.85,-1.45)
-  {reward $r\in[0,1]$};
-\node[smallbox, draw=rewardblue, text width=0.92cm,
-  below left=2pt and -1pt of reward.south] (self) {self-eval};
-\node[smallbox, draw=rewardblue, text width=1.05cm,
-  below right=2pt and -1pt of reward.south] (judge) {external\\judge};
+% output
+\node[box] (out) at (12.4,0) {CWE path\\category $\to$ leaf};
 
-\node[box, text width=1.32cm, minimum height=0.78cm] (output) at (7.85,0)
-  {CWE path\\category $\to$ leaf};
+% reward
+\node[rew] (reward) at (6.4,-1.9) {reward $r \in [0,1]$};
+\node[sub, draw=rewardblue] (se) at (5.35,-2.75) {self-eval};
+\node[sub, draw=rewardblue] (ju) at (7.45,-2.75) {external judge};
 
+% arrows
 \draw[arrow] (input) -- (policy);
-\draw[arrow] (policy) -- (controller);
-\draw[arrow] (controller) -- (output);
-\draw[arrow] (controller) -- (reward);
+\draw[arrow] (policy) -- (ctrl);
+\draw[arrow] (ladder.east) -- (out);
+\draw[arrow] (ctrl) -- (reward);
+\draw[arrow] (se) -- (reward);
+\draw[arrow] (ju) -- (reward);
 \draw[arrow, dashed, draw=rewardblue]
-  (reward.west) .. controls +(left:0.75cm) and +(down:0.85cm) .. (controller.south);
+  (reward.west) .. controls +(left:1.2cm) and +(down:0.9cm) .. (ctrl.south west);
 
 \end{tikzpicture}

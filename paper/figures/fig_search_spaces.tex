@@ -5,90 +5,68 @@
   },
   font=\footnotesize,
   >=Stealth,
-  node/.style={inner sep=1pt},
-  tax/.style={
-    circle,
-    draw=black!60,
-    line width=0.4pt,
-    minimum size=0.34cm,
-    inner sep=1pt,
-    fill=black!5
-  },
-  leaf/.style={
-    rounded corners=1.5pt,
-    draw=black!60,
-    line width=0.35pt,
-    align=center,
-    inner sep=2pt,
-    fill=black!4
-  },
-  step/.style={
-    rounded corners=2pt,
-    draw=black!60,
-    line width=0.4pt,
-    align=center,
-    inner sep=2.2pt,
-    fill=black!5,
-    text width=1.42cm
-  },
-  commit/.style={
-    rounded corners=2pt,
-    draw=mctsgreen,
-    line width=0.45pt,
-    align=center,
-    inner sep=2.2pt,
-    fill=mctsgreen!10,
-    text width=1.10cm
-  },
+  tax/.style={circle, draw=black!60, line width=0.4pt, minimum size=0.36cm,
+              inner sep=1pt, fill=black!5},
+  leaf/.style={rounded corners=1.5pt, draw=black!60, line width=0.35pt,
+               align=center, inner sep=2.5pt, fill=black!4},
+  ghost/.style={draw=black!25, text=black!35, fill=black!2},
+  rstep/.style={rounded corners=2pt, draw=black!60, line width=0.4pt,
+                align=center, inner sep=2.5pt, fill=black!5},
+  rcommit/.style={rounded corners=2pt, draw=mctsgreen, line width=0.5pt,
+                  align=center, inner sep=2.5pt, fill=mctsgreen!10},
   edge/.style={->, line width=0.4pt},
-  sel/.style={->, line width=0.85pt, draw=mctsred},
-  faint/.style={black!28},
-  greenedge/.style={draw=mctsgreen}
+  sel/.style={->, line width=0.9pt, draw=mctsred},
+  faint/.style={->, line width=0.4pt, black!25}
 ]
 
-\node[align=center] at (1.85,1.15) {MCTS-Tax: search over taxonomy};
-\node[tax] (root) at (1.85,0.55) {R};
-\node[tax] (cat1) at (0.65,-0.15) {A};
-\node[tax] (cat2) at (1.85,-0.15) {B};
-\node[tax] (cat3) at (3.05,-0.15) {C};
-\node[leaf] (a1) at (0.30,-0.90) {leaf};
-\node[leaf] (a2) at (1.00,-0.90) {leaf};
-\node[leaf, draw=black!28, text=black!38, fill=black!2] (b1) at (1.50,-0.90) {leaf};
-\node[leaf, draw=black!28, text=black!38, fill=black!2] (b2) at (2.20,-0.90) {leaf};
-\node[leaf] (c1) at (3.05,-0.90) {leaf};
+% ---------------- left: taxonomy search ----------------
+\node[align=center] at (2.5,2.4) {\textsc{MCTS-Tax}: search over the taxonomy};
 
-\draw[sel] (root) -- (cat1);
-\draw[edge] (root) -- (cat2);
-\draw[edge] (root) -- (cat3);
-\draw[edge] (cat1) -- (a1);
-\draw[edge] (cat1) -- (a2);
-\draw[edge, faint] (cat2) -- (b1);
-\draw[edge, faint] (cat2) -- (b2);
-\draw[edge] (cat3) -- (c1);
+\node[tax] (root) at (2.5,1.5) {};
+\node[tax] (catA) at (1.0,0.6) {A};
+\node[tax] (catB) at (2.5,0.6) {B};
+\node[tax] (catC) at (4.0,0.6) {C};
 
-\node[align=center, text width=1.85cm, text=mctsred]
-  at (1.00,-1.65) {commits at level 0\\unrecoverable};
-\draw[mctsgreen, line width=0.55pt]
-  ([xshift=-0.13cm,yshift=0.16cm]b2.north east) -- ++(0.08cm,-0.09cm) -- ++(0.17cm,0.20cm);
-\node[align=center, text=black!45] at (1.85,-1.20) {unreachable};
+\node[leaf] (a1) at (0.4,-0.4) {leaf};
+\node[leaf] (a2) at (1.5,-0.4) {leaf};
+\node[leaf, ghost] (b1) at (2.5,-0.4) {leaf};
+\node[leaf, ghost] (b2) at (3.5,-0.4) {gold};
+\node[leaf] (c1) at (4.5,-0.4) {leaf};
+\node[text=mctsgreen, inner sep=0pt] at ([xshift=0.16cm, yshift=0.14cm]b2.north)
+  {$\checkmark$};
 
-\node[align=center] at (6.25,1.15) {MCTS-Reason: search over reasoning};
-\node[step] (s0) at (4.65,0.45) {step:\\UAF risk};
-\node[step] (s1) at (6.05,0.82) {step:\\realloc moves};
-\node[step] (s2) at (6.05,0.06) {step:\\alias stale};
-\node[commit] (k1) at (7.45,0.82) {commit:\\CWE-416};
-\node[commit] (k2) at (7.45,0.06) {commit:\\CWE-416};
-\node[leaf] (l1) at (8.25,0.82) {leaf};
-\node[leaf] (l2) at (8.25,0.06) {leaf};
+\draw[sel] (root) -- (catA);
+\draw[edge] (root) -- (catB);
+\draw[edge] (root) -- (catC);
+\draw[sel] (catA) -- (a2);
+\draw[edge] (catA) -- (a1);
+\draw[faint] (catB) -- (b1);
+\draw[faint] (catB) -- (b2);
+\draw[edge] (catC) -- (c1);
+
+\node[align=center, text=mctsred] at (2.5,-1.35)
+  {commits to category A at level 0;\\the gold leaf is now unreachable};
+
+% ---------------- divider ----------------
+\draw[black!25, line width=0.4pt] (5.9,-1.8) -- (5.9,2.6);
+
+% ---------------- right: reasoning search ----------------
+\node[align=center] at (10.8,2.4) {\textsc{MCTS-Reason}: search over reasoning};
+
+\node[rstep] (s0) at (7.5,0.8)  {step: realloc\\may move buf};
+\node[rstep] (s1) at (10.0,1.6) {step: stale ptr\\read after call};
+\node[rstep] (s2) at (10.0,0.0) {step: bounds\\look correct};
+\node[rcommit] (k1) at (12.6,1.6) {commit:\\CWE-416};
+\node[rcommit] (k2) at (12.6,0.0) {commit:\\CWE-125};
+\node[text=mctsgreen, inner sep=0pt] at ([xshift=0.22cm, yshift=0.10cm]k1.north east)
+  {$\checkmark$};
 
 \draw[edge] (s0) -- (s1);
 \draw[edge] (s0) -- (s2);
-\draw[edge, greenedge] (s1) -- (k1);
-\draw[edge, greenedge] (s2) -- (k2);
-\draw[edge, greenedge] (k1) -- (l1);
-\draw[edge, greenedge] (k2) -- (l2);
+\draw[edge, draw=mctsgreen] (s1) -- (k1);
+\draw[edge, draw=mctsgreen] (s2) -- (k2);
 
-\node[align=center, text width=2.25cm, text=mctsgreen]
-  at (6.35,-0.95) {defers commitment,\\picks leaf directly};
+\node[align=center, text=mctsgreen!80!black] at (10.2,-1.35)
+  {defers commitment: the reward chooses\\among complete leaf candidates};
 
 \end{tikzpicture}
